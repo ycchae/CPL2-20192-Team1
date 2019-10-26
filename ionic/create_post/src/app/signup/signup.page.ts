@@ -24,12 +24,14 @@ export class SignupPage{
   }
   
   sign_up(form){
-    let headers = new HttpHeaders();
-    headers.append('Accept', 'application/json');
-    headers.append('Content-Type', 'application-json');
+    let header = new HttpHeaders(
+      {'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      }
+    );
 
     const URL = "http://54.180.89.77:9000/user/create";
-    this.http.post(URL, form.value, {headers: headers})
+    this.http.post(URL, form.value, {headers: header})
     .subscribe(data=>{
       console.log(data['overlap_examine']);
       this.alertController.create({

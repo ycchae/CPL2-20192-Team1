@@ -16,12 +16,14 @@ export class LoginPage {
   constructor(private http: HttpClient, private navCtrl: NavController) { }
 
   login(form){
-    let headers = new HttpHeaders();
-    headers.append('Accept', 'application/json');
-    headers.append('Content-Type', 'application-json');
-
+    let header = new HttpHeaders(
+      {'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      }
+    );
+    
     const URL = "http://54.180.89.77:9000/user/login";
-    this.http.post(URL, form.value, {headers: headers})
+    this.http.post(URL, form.value, {headers: header})
     .subscribe(data=>{
       console.log(data['check']);
     }, error=>{
