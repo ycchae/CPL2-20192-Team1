@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { HttpService } from '../http_service_module/http.service';
+
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss'],
+  styleUrls: ['./login.page.scss']
 })
 export class LoginPage {
   private user = {
@@ -13,24 +14,18 @@ export class LoginPage {
     password: ''
   }
 
-  constructor(private http: HttpClient, private navCtrl: NavController) { }
+  constructor(
+    private http: HttpService,
+    private navCtrl: NavController
+  ) { }
 
   login(form){
-    let header = new HttpHeaders(
-      {'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      }
-    );
-    
-    const URL = "http://54.180.89.77:9000/user/login";
-    this.http.post(URL, form.value, {headers: header})
-    .subscribe(data=>{
-      console.log(data['check']);
-    }, error=>{
-      console.log(error.status);
-      console.log(error.error);
-      console.log(error.headers);
-    })
+    let ret = this.http.login(form.value);
+    if(ret){
+      console.log("login success");
+    }else{
+      console.log("login fail");
+    }
   }
 
   goSignUp() {

@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-
+import { HttpService } from '../http_service_module/http.service'
 @Component({
   selector: 'app-signup',
   templateUrl: 'signup.page.html',
@@ -11,7 +10,7 @@ import { AlertController } from '@ionic/angular';
 export class SignupPage{
   
   constructor(
-      private http: HttpClient,
+      private http: HttpService,
       private navCtrl: NavController,
       private alertController : AlertController
     ) {}
@@ -24,16 +23,8 @@ export class SignupPage{
   }
   
   sign_up(form){
-    let header = new HttpHeaders(
-      {'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      }
-    );
-
-    const URL = "http://54.180.89.77:9000/user/create";
-    this.http.post(URL, form.value, {headers: header})
-    .subscribe(data=>{
-      console.log(data['overlap_examine']);
+    let ret = this.http.register(form.value);
+    if(ret){
       this.alertController.create({
         header: 'Confirm!',
         subHeader: '계정 만들기 성공!',
@@ -47,10 +38,7 @@ export class SignupPage{
       }).then(alert=>{
         alert.present();
       });
-    }, error=>{
-      console.log(error.status);
-      console.log(error.error);
-      console.log(error.headers);
+    }else{
       this.alertController.create({
         header: 'Reject!',
         subHeader: '계정 만들기 실패ㅠ',
@@ -61,15 +49,6 @@ export class SignupPage{
       }).then(alert=>{
         alert.present();
       });
-    })
+    }
   }
-
-  // private controller = document.querySelector('ion-alert-controller');
-  // sign_up(event){
-  //   event.preventDefault();
-  //   this.controller.create({
-  //     header: 'Account Created',
-  //     message: ''
-  //   }).then(alert => alert.present());
-  // // }
 }

@@ -54,7 +54,7 @@ http.createServer(app).listen(app.get('port'),function(){
 
 
 // SIGNUP
-router.route("/user/create").post(function(req,res){
+router.route("/user/register").post(function(req,res){
     var email = req.body.email;
     var inputPassword = req.body.password;
     var u_name = req.body.name;
@@ -67,13 +67,13 @@ router.route("/user/create").post(function(req,res){
     mysqlDB.query('INSERT INTO USER set ?', data,function(err,results){
         var admit;
         if(!err){
-            admit={"overlap_examine":"success"};
+            admit={"register":"success"};
             console.log("Create user success");
             res.write(JSON.stringify(admit));
             res.end();
         }else{
             console.log("USER INSERT ERROR");
-            admit ={"overlap_examine":"deny"};
+            admit ={"register":"deny"};
             res.write(JSON.stringify(admit));
             res.end();
         }
@@ -96,26 +96,24 @@ router.route("/user/login").post(function(req,res){
             
             if(hashPassword === user.USER_PW){
                 console.log("login success");
-                login = {"check": "ok", "u_email":user.USER_ID, "u_name":user.NAME, "u_department":user.DEPT};
+                login = {"login": "ok"};
             }else{
-                console.log("hasp2: "+ hashPassword);
-                console.log("userp2: "+ user.USER_PW);
                 console.log("WRONG ID or PASSWORD");
-                login = {"check": "wrong"}
+                login = {"login": "wrong"}
             }
             console.log(JSON.stringify(login));
             res.write(JSON.stringify(login));
             res.end();
         }
         else if(!results[0]){
-            login = {"check": "no"}; 
+            login = {"login": "wrong"}; 
             console.log("WRONG ID")
             console.log(JSON.stringify(login));
             res.write(JSON.stringify(login));
             res.end();
         }
         else{
-            login = {"check": "error"};
+            login = {"login": "error"};
             console.log("LOGIN ERROR");
             console.log(err);
             console.log(JSON.stringify(login));
