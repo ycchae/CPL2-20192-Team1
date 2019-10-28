@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AlertController } from '@ionic/angular';
-import { HttpService } from '../http_service_module/http.service'
+import { HttpService } from '../http_service_module/http.service';
 @Component({
   selector: 'app-signup',
   templateUrl: 'signup.page.html',

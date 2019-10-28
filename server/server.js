@@ -122,3 +122,114 @@ router.route("/user/login").post(function(req,res){
         }
     })
 })
+
+// GENERATE-TASK
+router.route("/task/generateBIG").post(function(req,res){
+    var projectID   = req.body.projectID;
+    var BigLevel    = req.body.BigLevel;
+    var BigTitle    = req.body.BigTitle;
+    var BigStart    = req.body.BigStart;
+    var BigEnd      = req.body.BigEnd;
+    var BigDesc     = req.body.BigDesc;
+    var BigAttach   = req.body.BigAttach;
+    var BigStatus   = req.body.BigStatus;
+    var BigAuthor   = req.body.BigAutohr;
+    var BigCreated  = req.body.BigCreated;
+    var BigWeight   = req.body.BigWeight;
+    var BigProgress = req.body.BigProgress 
+  
+ 
+    console.log(`projectID : ${projectID} , BigLevel : ${BigLevel}, BigTitle : ${BigTitle}, BigStart : ${BigStart} , BigEnd : ${BigEnd}, BigDesc : ${BigDesc}, `
+                +`BigAttach : ${BigAttach} , BigStatus : ${BigStatus}, BigAuthor : ${BigAuthor}, BigCreated : ${BigCreated} , BigWeight : ${BigWeight}, BigProgress : ${BigProgress}`);
+    
+    var data = {PROJ_ID:projectID, BIG_LEVEL:BigLevel, BIG_TITLE:BigTitle, BIG_START:BigStart, BIG_END:BigEnd, BIG_DESC:BigDesc,
+                BIG_ATTACHMENT:BigAttach, BIG_STATUS:BigStatus, BIG_AUTHOR:BigAuthor, BIG_CREATED:BigCreated, BIG_WEIGHT:BigWeight, BIG_PROGRESS:BigProgress};
+    mysqlDB.query('INSERT INTO POST_BIG set ?', data,function(err,results){
+        var admit;
+        if(!err){
+            admit={"generate":"success"};
+            console.log("Generate task success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }else{
+            console.log("TASK INSERT ERROR");
+            admit ={"generate":"deny"};
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+// GENERATE-TASK-Middle
+router.route("/task/generateMID").post(function(req,res){
+    var BigID       = req.body.BigID;
+    var MidLevel    = req.body.MidLevel;
+    var MidTitle    = req.body.MidTitle;
+    var MidStart    = req.body.MidStart;
+    var MidEnd      = req.body.MidEnd;
+    var MidDesc     = req.body.MidDesc;
+    var MidAttach   = req.body.MidAttach;
+    var MidStatus   = req.body.MidStatus;
+    var MidAuthor   = req.body.MidAutohr;
+    var MidCreated  = req.body.MidCreated;
+    var MidWeight   = req.body.MidWeight;
+    var MidProgress = req.body.MidProgress 
+  
+ 
+    console.log(`BigID : ${BigID} , MidLevel : ${MidLevel}, MidTitle : ${MidTitle}, MidStart : ${MidStart} , MidEnd : ${MidEnd}, MidDesc : ${MidDesc}, `
+                +`MidAttach : ${MidAttach} , MidStatus : ${MidStatus}, MidAuthor : ${MidAuthor}, MidCreated : ${MidCreated} , MidWeight : ${MidWeight}, MidProgress : ${MidProgress}`);
+    
+    var data = {BIG_ID:BigID, MID_LEVEL:MidLevel, MID_TITLE:MidTitle, MID_START:MidStart, MID_END:MidEnd, MID_DESC:MidDesc,
+                MID_ATTACHMENT:MidAttach, MID_STATUS:MidStatus, MID_AUTHOR:MidAuthor, MID_CREATED:MidCreated, MID_WEIGHT:MidWeight, MID_PROGRESS:MidProgress};
+    mysqlDB.query('INSERT INTO POST_MID set ?', data,function(err,results){
+        var admit;
+        if(!err){
+            admit={"generate":"success"};
+            console.log("Generate task success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }else{
+            console.log("TASK INSERT ERROR");
+            admit ={"generate":"deny"};
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+// GENERATE-TASK-Middle
+router.route("/task/generateSML").post(function(req,res){
+    var MidID       = req.body.MidID;
+    var SmlLevel    = req.body.SmlLevel;
+    var SmlTitle    = req.body.SmlTitle;
+    var SmlStart    = req.body.SmlStart;
+    var SmlEnd      = req.body.SmlEnd;
+    var SmlDesc     = req.body.SmlDesc;
+    var SmlAttach   = req.body.SmlAttach;
+    var SmlStatus   = req.body.SmlStatus;
+    var SmlAuthor   = req.body.SmlAutohr;
+    var SmlCreated  = req.body.SmlCreated;
+    var SmlWeight   = req.body.SmlWeight;
+    var SmlProgress = req.body.SmlProgress 
+  
+ 
+    console.log(`MidID : ${MidID} , SmlLevel : ${SmlLevel}, SmlTitle : ${SmlTitle}, SmlStart : ${SmlStart} , SmlEnd : ${SmlEnd}, SmlDesc : ${SmlDesc}, `
+                +`SmlAttach : ${SmlAttach} , SmlStatus : ${SmlStatus}, SmlAuthor : ${SmlAuthor}, SmlCreated : ${SmlCreated} , SmlWeight : ${SmlWeight}, SmlProgress : ${SmlProgress}`);
+    
+    var data = {MID_ID:MidID, SML_LEVEL:SmlLevel, SML_TITLE:SmlTitle, SML_START:SmlStart, SML_END:SmlEnd, SML_DESC:SmlDesc,
+                SML_ATTACHMENT:SmlAttach, SML_STATUS:SmlStatus, SML_AUTHOR:SmlAuthor, SML_CREATED:SmlCreated, SML_WEIGHT:SmlWeight, SML_PROGRESS:SmlProgress};
+    mysqlDB.query('INSERT INTO POST_Sml set ?', data,function(err,results){
+        var admit;
+        if(!err){
+            admit={"generate":"success"};
+            console.log("Generate task success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }else{
+            console.log("TASK INSERT ERROR");
+            admit ={"generate":"deny"};
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})

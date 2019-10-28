@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { LoadingController, ToastController } from '@ionic/angular';
+import { HttpService } from '../http_service_module/http.service';
+import { AlertController } from '@ionic/angular';
 // import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 // import { FileUploader } from 'ng2-file-upload';
 
@@ -19,7 +21,9 @@ export class GenerateTaskPage {
   constructor(
     // private transfer: FileTransfer,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private http: HttpService,
+    private alertController : AlertController
     ) { }
 
 
@@ -39,7 +43,22 @@ export class GenerateTaskPage {
   //     console.log('upload failed: ' + JSON.stringify(error));
   //   })
   // }
-  
+    task = {
+      big_level: '',
+      middle_level: '',
+      start_date:'',
+      end_date:'',
+      weight:'',
+      title:'',
+      desc:'',
+      file:''
+    }
+    generate_task(form){
+      let ret = this.http.register(form.value);
+      if(ret){
+        
+      }
+    }
   
   
   post_bigs: any[] = [
