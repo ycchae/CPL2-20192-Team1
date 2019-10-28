@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>과업 작성</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <ion-list>
+      <ion-item>
+        <ion-label>대분류</ion-label>
+        <ion-select [interfaceOptions]="customAlertPostBig" interface="alert" placeholder="Select One">
+          <ion-select-option *ngFor="let post_big of post_bigs">{{post_big.first + ' ' + post_big.last}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+          <ion-label>중분류</ion-label>
+          <ion-select [interfaceOptions]="customAlertPostMiddle" interface="alert" placeholder="Select One">
+            <ion-select-option *ngFor="let post_middle of post_middles">{{post_middle.first + ' ' + post_middle.last}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating" >Description</ion-label>
+          <ion-textarea rows="20" required></ion-textarea>
+        </ion-item>
+    </ion-list>
+    <ion-item>
+      <ion-input type="file" multiple="file"></ion-input>
+    </ion-item>
+    <ion-button class="ion-margin-horizontal ion-float-end" size="large" type="submit">제출</ion-button>
+</ion-content>

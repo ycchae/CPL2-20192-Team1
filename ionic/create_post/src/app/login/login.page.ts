@@ -23,6 +23,7 @@ export class LoginPage {
     let ret = this.http.login(form.value);
     if(ret){
       console.log("login success");
+      this.goMainPage();
     }else{
       console.log("login fail");
     }
@@ -30,6 +31,9 @@ export class LoginPage {
 
   goSignUp() {
     this.navCtrl.navigateForward('/signup');
+  }
+  goMainPage(){
+    this.navCtrl.navigateForward('/generate-task');
   }
 
 }
