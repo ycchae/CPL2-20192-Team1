@@ -24,7 +24,7 @@ export class SignupPage{
   }
   
   sign_up(form: FormGroup){
-    this.http.login(form.value).subscribe(
+    this.http.register(form.value).subscribe(
       res => {
         if(res["register"] === "success"){
           this.alertController.create({

@@ -50,6 +50,7 @@ export class GenerateProjectPage {
  //   })
  // }
    project = {
+     mgr_id:'',
      user_id:'',
      title:'',
      start_date:'',
@@ -58,6 +59,7 @@ export class GenerateProjectPage {
    }
 
    generate_project(){
+    this.project.mgr_id = this.project.user_id;
     this.project.start_date = this.project.start_date.substr(0,10) + " " +this.project.start_date.split('T')[1].substr(0,8);
     this.project.end_date = this.project.end_date.substr(0,10) + " " +this.project.end_date.split('T')[1].substr(0,8);
     this.http.generate_project(this.project).subscribe(
@@ -71,7 +73,7 @@ export class GenerateProjectPage {
             buttons: [{
               text: '확인',
               handler:() =>{
-                this.navCtrl.navigateForward('/generate-project');
+                this.navCtrl.navigateForward('/main');
               }
             }]
           }).then(alert=>{

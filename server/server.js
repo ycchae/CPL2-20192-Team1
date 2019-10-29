@@ -239,6 +239,7 @@ router.route("/task/generateSML").post(function(req,res){
 
 // PROJECT
 router.route("/project/create").post(function(req,res){
+    var mgr_id = req.body.mgr_id;
     var title = req.body.title;
     var start_date = req.body.start_date;
     var end_date = req.body.end_date;
@@ -246,6 +247,7 @@ router.route("/project/create").post(function(req,res){
     var user_id = req.body.user_id;
     console.log(req.body);
     var data = {
+        PROJ_MGR_UID:mgr_id,
         PROJ_NAME:title,
         PROJ_START:start_date,
         PROJ_END:end_date,
