@@ -36,11 +36,11 @@
           <ion-range name ="weight" [(ngModel)]="task.weight" color="danger" pin="true"></ion-range>
         </ion-item>
         <ion-item>
-          <ion-label position="floating" >내용</ion-label>
+          <ion-label position="floating">내용</ion-label>
           <ion-textarea name = "desc" [(ngModel)]="task.desc" rows="20" required></ion-textarea>
         </ion-item>
         <ion-item>
-            <ion-input name = "file" [(ngModel)]="task.file" type="file" multiple="file"></ion-input>
+            <ion-input name="file" [(ngModel)]="task.file" type="file" multiple="true"></ion-input>
         </ion-item>
       </ion-list>   
       <ion-button class="ion-margin-horizontal ion-float-end" size="large" type="submit">제출</ion-button>

@@ -3,7 +3,6 @@ import { LoadingController, ToastController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
-import { FormGroup } from '@angular/forms';
 import { StorageService } from '../storage_service_module/storage.service' 
 
 
@@ -14,15 +13,7 @@ import { StorageService } from '../storage_service_module/storage.service'
 })
 export class GenerateProjectPage {
 
- // uploader:FileUploader;
- hasBaseDropZoneOver: boolean;
- hasAnotherDropZoneOver: boolean;
- response:string;
-
  constructor(
-   // private transfer: FileTransfer,
-   private loadingCtrl: LoadingController,
-   private toastCtrl: ToastController,
    private http: HttpService,
    private alertController : AlertController,
    private navCtrl: NavController,
@@ -32,23 +23,6 @@ export class GenerateProjectPage {
     });
   }
 
-
- // uploadHandler(){
- //   this.fileTransfer = this.transfer.create();
- //   let options: FileUploadOptions = {
- //     fileKey: 'file',
- //     chunkedMode: false,
- //     fileName: "Downloadimage.png",
-
- //   }
- //   this.fileTransfer.upload('SOURCE_FILE_PATH', 'API_ENDPOINT', options, true).then((res) => {
- //     console.log("file uploaded successfully.", res)
- //    // this. = true;
- //   }).catch((error) => {
- //     //here logging an error. 
- //     console.log('upload failed: ' + JSON.stringify(error));
- //   })
- // }
    project = {
      mgr_id:'',
      user_id:'',

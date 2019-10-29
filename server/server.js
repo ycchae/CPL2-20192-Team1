@@ -136,7 +136,7 @@ router.route("/task/generateBIG").post(function(req,res){
     var BigDesc     = req.body.BigDesc;
     var BigAttach   = req.body.BigAttach;
     var BigStatus   = req.body.BigStatus;
-    var BigAuthor   = req.body.BigAutohr;
+    var BigAuthor   = req.body.BigAuthor;
     var BigCreated  = req.body.BigCreated;
     var BigWeight   = req.body.BigWeight;
     var BigProgress = req.body.BigProgress 

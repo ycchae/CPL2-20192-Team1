@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
@@ -20,18 +20,26 @@ export class GenerateTaskPage {
   hasAnotherDropZoneOver: boolean;
   response:string;
 
+  mgr_id : string;
+
   constructor(
     // private transfer: FileTransfer,
     private loadingCtrl: LoadingController,
-    private toastCtrl: ToastController,
     private http: HttpService,
     private alertController : AlertController,
     private navCtrl: NavController,
     private storage:StorageService
-    ) { storage.get_uid().then(val=>{
-      this.task.user_id = val
-      });
-      }
+  ){
+    storage.get_uid().then(val=>{
+      this.body.BigAuthor = val;
+    });
+    storage.get_proj_id().then(val=>{
+      this.body.projectID = val;
+    });
+    storage.get_mgr_id().then(val=>{
+       this.mgr_id = val;
+    });
+  }
       
 
   
@@ -52,7 +60,6 @@ export class GenerateTaskPage {
   //   })
   // }
     task = {
-      user_id: '',
       big_level: '',
       middle_level: '',
       start_date:'',
@@ -62,9 +69,26 @@ export class GenerateTaskPage {
       desc:'',
       file:''
     }
-    generate_task(form){
-         console.log(this.task.user_id);
-      let ret = this.http.generate_task(form.value);
+
+    body = {
+      projectID   : '',
+      BigLevel    : '',
+      BigTitle    : '',
+      BigStart    : '',
+      BigEnd      : '',
+      BigDesc     : '',
+      BigAttach   : '',
+      BigStatus   : '',
+      BigAuthor   : '',
+      BigCreated  : '',
+      BigWeight   : '',
+      BigProgress : ''
+    }
+
+    generate_task(){
+      console.log(this.task);
+      this.body.BigLevel = this.task.big_level;
+      /*let ret = this.http.generate_task(this.task);
       if(ret){
         this.alertController.create({
           header: 'Confirm!',
@@ -90,7 +114,7 @@ export class GenerateTaskPage {
         }).then(alert=>{
           alert.present();
         });
-      }
+      }*/
     }
   
   

@@ -9,7 +9,10 @@ const routes: Routes = [
   { path: 'generate-task', loadChildren: './generate-task/generate-task.module#GenerateTaskPageModule' },
   { path: 'main', loadChildren: './main/main.module#MainPageModule' },
   { path: 'task-list', loadChildren: './task-list/task-list.module#TaskListPageModule' },
-  { path: 'generate-project', loadChildren: './generate-project/generate-project.module#GenerateProjectPageModule' }
+  { path: 'generate-project', loadChildren: './generate-project/generate-project.module#GenerateProjectPageModule' },
+  { path: 'create-big', loadChildren: './create-big/create-big.module#CreateBigPageModule' },
+  { path: 'create-mid', loadChildren: './create-mid/create-mid.module#CreateMidPageModule' },
+  { path: 'create-small', loadChildren: './create-small/create-small.module#CreateSmallPageModule' }
 ]
 
 @NgModule({
