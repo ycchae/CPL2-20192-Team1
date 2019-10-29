@@ -42,7 +42,7 @@ export class LoginPage {
     this.navCtrl.navigateForward('/signup');
   }
   goMainPage(){
-    this.navCtrl.navigateForward('/generate-task');
+    this.navCtrl.navigateForward('/main');
   }
 
 }

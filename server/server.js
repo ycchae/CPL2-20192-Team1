@@ -71,6 +71,7 @@ router.route("/user/register").post(function(req,res){
             console.log("Create user success");
             res.write(JSON.stringify(admit));
             res.end();
+            console(results);
         }else{
             console.log("USER INSERT ERROR");
             admit ={"register":"deny"};
@@ -88,7 +89,17 @@ router.route("/user/login").post(function(req,res){
 
     mysqlDB.query('select * from USER where USER_ID=?',[email],function(err, results){
         var login;
-        if(!err)
+        if(err){
+            login = {"login": "error"};
+            console.log("LOGIN ERROR");
+            console.log(err);
+            console.log(JSON.stringify(login));
+            res.write(JSON.stringify(login));
+            res.end();
+            return ;
+        }
+
+        if(results.length > 0)
         {
             console.log(results);
             var user = results[0];
@@ -96,7 +107,7 @@ router.route("/user/login").post(function(req,res){
             
             if(hashPassword === user.USER_PW){
                 console.log("login success");
-                login = {"login": "ok"};
+                login = {"login": "success"};
             }else{
                 console.log("WRONG ID or PASSWORD");
                 login = {"login": "wrong"}
@@ -105,17 +116,9 @@ router.route("/user/login").post(function(req,res){
             res.write(JSON.stringify(login));
             res.end();
         }
-        else if(!results[0]){
+        else{
             login = {"login": "wrong"}; 
             console.log("WRONG ID")
-            console.log(JSON.stringify(login));
-            res.write(JSON.stringify(login));
-            res.end();
-        }
-        else{
-            login = {"login": "error"};
-            console.log("LOGIN ERROR");
-            console.log(err);
             console.log(JSON.stringify(login));
             res.write(JSON.stringify(login));
             res.end();
@@ -229,6 +232,88 @@ router.route("/task/generateSML").post(function(req,res){
             console.log("TASK INSERT ERROR");
             admit ={"generate":"deny"};
             res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+// PROJECT
+router.route("/project/create").post(function(req,res){
+    var title = req.body.title;
+    var start_date = req.body.start_date;
+    var end_date = req.body.end_date;
+    var desc = req.body.desc;
+    
+    var data = {
+        PROJ_NAME:title,
+        PROJ_START:start_date,
+        PROJ_END:end_date,
+        PROJ_DESC:desc,
+        PROJ_PROGRESS:0.00,
+        PROJ_STATUS:0
+    };
+
+    mysqlDB.query('INSERT INTO PROJECT set ?', data,function(err,results){
+        var admit;
+        if(!err){
+            admit={"create":"success"};
+            console.log("PROJECT create success");
+            res.write(JSON.stringify(admit));
+            res.end();
+            console.log(results);
+            console.log(results.PROJ_ID);
+        }else{
+            console.log("PROJECT create fail");
+            admit ={"create":"deny"};
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+
+
+    var user_id = req.body.user_id;
+})
+
+router.route("/project/select").post(function(req,res){ 
+    var email = req.body.email;
+    
+    console.log("======= Proejct Select =======\n");
+    console.log("email: "+email);
+
+    mysqlDB.query('select * from ATTENDENCE where USER_ID=?',[email],function(err, results){
+        var login;
+        if(err){
+            login = {"login": "error"};
+            console.log("LOGIN ERROR");
+            console.log(err);
+            console.log(JSON.stringify(login));
+            res.write(JSON.stringify(login));
+            res.end();
+            return ;
+        }
+
+        if(results.length > 0)
+        {
+            console.log(results);
+            var user = results[0];
+            var hashPassword = crypto.createHash("sha512").update(password + user.SALT).digest("hex");
+            
+            if(hashPassword === user.USER_PW){
+                console.log("login success");
+                login = {"login": "success"};
+            }else{
+                console.log("WRONG ID or PASSWORD");
+                login = {"login": "wrong"}
+            }
+            console.log(JSON.stringify(login));
+            res.write(JSON.stringify(login));
+            res.end();
+        }
+        else{
+            login = {"login": "wrong"}; 
+            console.log("WRONG ID")
+            console.log(JSON.stringify(login));
+            res.write(JSON.stringify(login));
             res.end();
         }
     })
