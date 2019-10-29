@@ -3,6 +3,7 @@ import { LoadingController, ToastController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
+import { StorageService } from '../storage_service_module/storage.service' 
 // import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 // import { FileUploader } from 'ng2-file-upload';
 
@@ -25,10 +26,15 @@ export class GenerateTaskPage {
     private toastCtrl: ToastController,
     private http: HttpService,
     private alertController : AlertController,
-    private navCtrl: NavController
-    ) { }
+    private navCtrl: NavController,
+    private storage:StorageService
+    ) { storage.get_uid().then(val=>{
+      this.task.user_id = val
+      });
+      }
+      
 
-
+  
   // uploadHandler(){
   //   this.fileTransfer = this.transfer.create();
   //   let options: FileUploadOptions = {
@@ -46,6 +52,7 @@ export class GenerateTaskPage {
   //   })
   // }
     task = {
+      user_id: '',
       big_level: '',
       middle_level: '',
       start_date:'',
@@ -56,6 +63,7 @@ export class GenerateTaskPage {
       file:''
     }
     generate_task(form){
+         console.log(this.task.user_id);
       let ret = this.http.generate_task(form.value);
       if(ret){
         this.alertController.create({

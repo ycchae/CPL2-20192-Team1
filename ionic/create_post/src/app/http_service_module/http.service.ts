@@ -86,6 +86,23 @@ export class HttpService {
   }
 
 
+  generate_project(info) : Observable<{}> {
+    let URL = `${this.SERVER_ADDRESS}/project/create`;
+    return this.httpClient.post(URL, info, {headers: this.header})
+    .pipe(
+      tap(async (res) => {
+        console.log("PROJECT create "+ res["create"]);
+        if(res["create"] === "success"){
+          this.httpSubject.next(true);
+        }else{
+          this.httpSubject.next(false);
+        }
+      })
+    );
+  }
+
+
+
 
   // save_id
   // save_role

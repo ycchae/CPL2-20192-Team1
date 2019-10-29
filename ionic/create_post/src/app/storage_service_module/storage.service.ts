@@ -10,6 +10,7 @@ export class StorageService {
   }
 
   save_id(email : string){
+    console.log(email);
     this.storage.set("USER_ID", email);
   }
 
@@ -26,8 +27,7 @@ export class StorageService {
   }
 
   get_uid() {
-    return this.storage.get("USER_ID");
-  }
+    return (this.storage.get("USER_ID")); }
 
   get_role() {
     return this.storage.get("USER_ROLE");

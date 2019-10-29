@@ -8,6 +8,10 @@
   <form #form="ngForm" (ngSubmit)="generate_task(form)">
     <ion-list>
         <ion-item>
+            <ion-label position="floating">제목</ion-label>
+            <ion-input name = "title" [(ngModel)]="task.title" placeholder="제목을 입력하세요"></ion-input>
+        </ion-item>
+        <ion-item>
           <ion-label>대분류</ion-label>
           <ion-select name = "big_level" [(ngModel)]="task.big_level" [interfaceOptions]="customAlertPostBig" interface="alert" placeholder="Select One">
             <ion-select-option  *ngFor="let post_big of post_bigs">{{post_big.first + ' ' + post_big.last}}</ion-select-option>
@@ -30,10 +34,6 @@
         <ion-item>
           <ion-label>중요도</ion-label>
           <ion-range name ="weight" [(ngModel)]="task.weight" color="danger" pin="true"></ion-range>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">제목</ion-label>
-          <ion-input name = "title" [(ngModel)]="task.title" placeholder="제목을 입력하세요"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating" >내용</ion-label>
