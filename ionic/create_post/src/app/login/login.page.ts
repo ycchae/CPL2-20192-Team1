@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
+import { FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -19,14 +20,22 @@ export class LoginPage {
     private navCtrl: NavController
   ) { }
 
-  login(form){
-    let ret = this.http.login(form.value);
-    if(ret){
-      console.log("login success");
-      this.goMainPage();
-    }else{
-      console.log("login fail");
-    }
+  login(form: FormGroup){
+    this.http.login(form.value).subscribe(
+      res => {
+        if(res["login"] === "success"){
+          console.log("loginpage success");
+          this.goMainPage() ;
+        }else{
+          console.log("loginpage fail");
+        }
+      },
+      error => {
+        console.log(error.status);
+        console.log(error.error);
+        console.log(error.headers);
+      }
+    );
   }
 
   goSignUp() {

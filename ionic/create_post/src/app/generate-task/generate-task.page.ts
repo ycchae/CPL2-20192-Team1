@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { AlertController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 // import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 // import { FileUploader } from 'ng2-file-upload';
 
@@ -23,7 +24,8 @@ export class GenerateTaskPage {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private http: HttpService,
-    private alertController : AlertController
+    private alertController : AlertController,
+    private navCtrl: NavController
     ) { }
 
 
@@ -54,9 +56,32 @@ export class GenerateTaskPage {
       file:''
     }
     generate_task(form){
-      let ret = this.http.register(form.value);
+      let ret = this.http.generate_task(form.value);
       if(ret){
-        
+        this.alertController.create({
+          header: 'Confirm!',
+          subHeader: '작업 추가 성공!',
+          message: '메인 화면으로 이동합니다.',
+          buttons: [{
+            text: '확인',
+            handler:() =>{
+              this.navCtrl.navigateForward('/generate-task');
+            }
+          }]
+        }).then(alert=>{
+          alert.present();
+        });
+      }else{
+        this.alertController.create({
+          header: 'Reject!',
+          subHeader: '작업 추가 실패',
+          message: '잠시후 다시 시도해주세요.',
+          buttons: [{
+            text: '확인'
+          }]
+        }).then(alert=>{
+          alert.present();
+        });
       }
     }
   

@@ -46,14 +46,30 @@ export class HttpService {
     return this.httpSubject.asObservable();
   }
 
-  login(info) {
+  login(info) : Observable<{}> {
     let URL = `${this.SERVER_ADDRESS}/user/login`;
+    return this.httpClient.post(URL, info, {headers: this.header})
+    .pipe(
+      tap(async (res) => {
+        console.log("loginservice "+ res["login"]);
+        if(res["login"] === "success"){
+          this.storage.save_id(info["email"]);
+          this.httpSubject.next(true);
+        }else{
+          this.httpSubject.next(false);
+        }
+      })
+    );
+  }
+
+  
+  generate_task(info) {
+    let URL = `${this.SERVER_ADDRESS}/task/generateBIG`;
     this.httpClient.post(URL, info, {headers: this.header})
     .subscribe(
-      tap( async res => {
-        console.log("Login "+ res["login"])
-        if(res["login"] === "success"){
-          await this.storage.save_id(info["email"]);
+       tap( async res => {
+        console.log("TASK generate"+ res["generate"])
+        if(res["generate"] === "success"){
           this.httpSubject.next(true);
         }else{
           this.httpSubject.next(false);
@@ -68,6 +84,8 @@ export class HttpService {
     );
     return this.httpSubject.asObservable();
   }
+
+
 
   // save_id
   // save_role
