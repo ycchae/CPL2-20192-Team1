@@ -301,7 +301,8 @@ router.route("/project/select").get(function(req,res){
     var user_id = req.query.user_id;
     console.log("======= Proejct Select =======\n");
     console.log("user_id: "+user_id);
-    mysqlDB.query('select * from PROJECT where PROJ_ID in ( select PROJ_ID from ATTENDENCE where USER_ID = ?) where PROJ_STATUS=0',[user_id],function(err,rows,fields){
+    
+    mysqlDB.query('select * from PROJECT pj where PROJ_STATUS=0 AND EXISTS ( select * from ATTENDENCE at where at.USER_ID = ? AND pj.PROJ_ID = at.PROJ_ID)',[user_id],function(err,rows,fields){
         if(err){
             console.log("error입니다")
         }
