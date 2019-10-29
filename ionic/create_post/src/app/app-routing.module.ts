@@ -7,9 +7,10 @@ const routes: Routes = [
   { path: 'login', loadChildren: './login/login.module#LoginPageModule' },
   { path: 'signup', loadChildren: './signup/signup.module#SignupPageModule' },
   { path: 'generate-task', loadChildren: './generate-task/generate-task.module#GenerateTaskPageModule' },
-  { path: 'generate-project', loadChildren: './generate-project/generate-project.module#GenerateProjectPageModule' },
-
-];
+  { path: 'main', loadChildren: './main/main.module#MainPageModule' },
+  { path: 'task-list', loadChildren: './task-list/task-list.module#TaskListPageModule' },
+  { path: 'generate-project', loadChildren: './generate-project/generate-project.module#GenerateProjectPageModule' }
+]
 
 @NgModule({
   imports: [

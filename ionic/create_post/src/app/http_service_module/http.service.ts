@@ -24,26 +24,19 @@ export class HttpService {
 
   httpSubject  =  new  BehaviorSubject(false);
 
-  register(info) {
+  register(info) : Observable<{}> {
     let URL = `${this.SERVER_ADDRESS}/user/register`;
-    this.httpClient.post(URL, info, {headers: this.header})
-    .subscribe(
-       tap( async res => {
-        console.log("REGISTER "+ res["register"])
+    return this.httpClient.post(URL, info, {headers: this.header})
+    .pipe(
+      tap(async (res) => {
+        console.log("registerservice "+ res["register"]);
         if(res["register"] === "success"){
           this.httpSubject.next(true);
         }else{
           this.httpSubject.next(false);
         }
-      }),
-      async error =>{
-        console.log(error.status);
-        console.log(error.error);
-        console.log(error.headers);
-        this.httpSubject.next(false);
-      }
+      })
     );
-    return this.httpSubject.asObservable();
   }
 
   login(info) : Observable<{}> {
@@ -53,7 +46,7 @@ export class HttpService {
       tap(async (res) => {
         console.log("loginservice "+ res["login"]);
         if(res["login"] === "success"){
-          this.storage.save_id(info["email"]);
+          this.storage.save_uid(info["email"]);
           this.httpSubject.next(true);
         }else{
           this.httpSubject.next(false);
@@ -61,7 +54,11 @@ export class HttpService {
       })
     );
   }
-
+  
+  get_project_list(user_id) : Observable<{}> {
+    let URL = `${this.SERVER_ADDRESS}/project/select?user_id=${user_id}`;
+    return this.httpClient.get(URL, {headers: this.header});
+  }
   
   generate_task(info) {
     let URL = `${this.SERVER_ADDRESS}/task/generateBIG`;
