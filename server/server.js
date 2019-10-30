@@ -126,8 +126,8 @@ router.route("/user/login").post(function(req,res){
     })
 })
 
-// GENERATE-TASK
-router.route("/task/generateBIG").post(function(req,res){
+// GENERATE-TASK-BIG
+router.route("/task/createBIG").post(function(req,res){
     var projectID   = req.body.projectID;
     var BigLevel    = req.body.BigLevel;
     var BigTitle    = req.body.BigTitle;
@@ -139,7 +139,10 @@ router.route("/task/generateBIG").post(function(req,res){
     var BigAuthor   = req.body.BigAuthor;
     var BigCreated  = req.body.BigCreated;
     var BigWeight   = req.body.BigWeight;
-    var BigProgress = req.body.BigProgress 
+    var BigProgress = req.body.BigProgress ;
+    
+
+    console.log(BigAttach);
   
  
     console.log(`projectID : ${projectID} , BigLevel : ${BigLevel}, BigTitle : ${BigTitle}, BigStart : ${BigStart} , BigEnd : ${BigEnd}, BigDesc : ${BigDesc}, `
@@ -150,13 +153,13 @@ router.route("/task/generateBIG").post(function(req,res){
     mysqlDB.query('INSERT INTO POST_BIG set ?', data,function(err,results){
         var admit;
         if(!err){
-            admit={"generate":"success"};
-            console.log("Generate task success");
+            admit={"create":"success"};
+            console.log("Create task success");
             res.write(JSON.stringify(admit));
             res.end();
         }else{
             console.log("TASK INSERT ERROR");
-            admit ={"generate":"deny"};
+            admit ={"create":"deny"};
             res.write(JSON.stringify(admit));
             res.end();
         }
@@ -164,7 +167,7 @@ router.route("/task/generateBIG").post(function(req,res){
 })
 
 // GENERATE-TASK-Middle
-router.route("/task/generateMID").post(function(req,res){
+router.route("/task/createMID").post(function(req,res){
     var BigID       = req.body.BigID;
     var MidLevel    = req.body.MidLevel;
     var MidTitle    = req.body.MidTitle;
@@ -173,71 +176,66 @@ router.route("/task/generateMID").post(function(req,res){
     var MidDesc     = req.body.MidDesc;
     var MidAttach   = req.body.MidAttach;
     var MidStatus   = req.body.MidStatus;
-    var MidAuthor   = req.body.MidAutohr;
+    var MidAuthor   = req.body.MidAuthor;
     var MidCreated  = req.body.MidCreated;
-    var MidWeight   = req.body.MidWeight;
-    var MidProgress = req.body.MidProgress 
   
  
     console.log(`BigID : ${BigID} , MidLevel : ${MidLevel}, MidTitle : ${MidTitle}, MidStart : ${MidStart} , MidEnd : ${MidEnd}, MidDesc : ${MidDesc}, `
-                +`MidAttach : ${MidAttach} , MidStatus : ${MidStatus}, MidAuthor : ${MidAuthor}, MidCreated : ${MidCreated} , MidWeight : ${MidWeight}, MidProgress : ${MidProgress}`);
+                +`MidAttach : ${MidAttach} , MidStatus : ${MidStatus}, MidAuthor : ${MidAuthor}, MidCreated : ${MidCreated}`);
     
     var data = {BIG_ID:BigID, MID_LEVEL:MidLevel, MID_TITLE:MidTitle, MID_START:MidStart, MID_END:MidEnd, MID_DESC:MidDesc,
-                MID_ATTACHMENT:MidAttach, MID_STATUS:MidStatus, MID_AUTHOR:MidAuthor, MID_CREATED:MidCreated, MID_WEIGHT:MidWeight, MID_PROGRESS:MidProgress};
+                MID_ATTACHMENT:MidAttach, MID_STATUS:MidStatus, MID_AUTHOR:MidAuthor, MID_CREATED:MidCreated};
     mysqlDB.query('INSERT INTO POST_MID set ?', data,function(err,results){
         var admit;
         if(!err){
-            admit={"generate":"success"};
-            console.log("Generate task success");
+            admit={"create":"success"};
+            console.log("Create task success");
             res.write(JSON.stringify(admit));
             res.end();
         }else{
             console.log("TASK INSERT ERROR");
-            admit ={"generate":"deny"};
+            admit ={"create":"deny"};
             res.write(JSON.stringify(admit));
             res.end();
         }
     })
 })
 
-// GENERATE-TASK-Middle
-router.route("/task/generateSML").post(function(req,res){
+// GENERATE-TASK-Small
+router.route("/task/createSML").post(function(req,res){
     var MidID       = req.body.MidID;
-    var SmlLevel    = req.body.SmlLevel;
     var SmlTitle    = req.body.SmlTitle;
     var SmlStart    = req.body.SmlStart;
     var SmlEnd      = req.body.SmlEnd;
     var SmlDesc     = req.body.SmlDesc;
     var SmlAttach   = req.body.SmlAttach;
     var SmlStatus   = req.body.SmlStatus;
-    var SmlAuthor   = req.body.SmlAutohr;
+    var SmlAuthor   = req.body.SmlAuthor;
     var SmlCreated  = req.body.SmlCreated;
-    var SmlWeight   = req.body.SmlWeight;
-    var SmlProgress = req.body.SmlProgress 
   
  
-    console.log(`MidID : ${MidID} , SmlLevel : ${SmlLevel}, SmlTitle : ${SmlTitle}, SmlStart : ${SmlStart} , SmlEnd : ${SmlEnd}, SmlDesc : ${SmlDesc}, `
-                +`SmlAttach : ${SmlAttach} , SmlStatus : ${SmlStatus}, SmlAuthor : ${SmlAuthor}, SmlCreated : ${SmlCreated} , SmlWeight : ${SmlWeight}, SmlProgress : ${SmlProgress}`);
+    console.log(`MidID : ${MidID} , SmlTitle : ${SmlTitle}, SmlStart : ${SmlStart} , SmlEnd : ${SmlEnd}, SmlDesc : ${SmlDesc}, `
+                +`SmlAttach : ${SmlAttach} , SmlStatus : ${SmlStatus}, SmlAuthor : ${SmlAuthor}, SmlCreated : ${SmlCreated}`);
     
-    var data = {MID_ID:MidID, SML_LEVEL:SmlLevel, SML_TITLE:SmlTitle, SML_START:SmlStart, SML_END:SmlEnd, SML_DESC:SmlDesc,
-                SML_ATTACHMENT:SmlAttach, SML_STATUS:SmlStatus, SML_AUTHOR:SmlAuthor, SML_CREATED:SmlCreated, SML_WEIGHT:SmlWeight, SML_PROGRESS:SmlProgress};
-    mysqlDB.query('INSERT INTO POST_Sml set ?', data,function(err,results){
+    var data = {MID_ID:MidID, SML_TITLE:SmlTitle, SML_START:SmlStart, SML_END:SmlEnd, SML_DESC:SmlDesc,
+                SML_ATTACHMENT:SmlAttach, SML_STATUS:SmlStatus, SML_AUTHOR:SmlAuthor, SML_CREATED:SmlCreated};
+    mysqlDB.query('INSERT INTO POST_SML set ?', data,function(err,results){
         var admit;
         if(!err){
-            admit={"generate":"success"};
-            console.log("Generate task success");
+            admit={"create":"success"};
+            console.log("Create task success");
             res.write(JSON.stringify(admit));
             res.end();
         }else{
             console.log("TASK INSERT ERROR");
-            admit ={"generate":"deny"};
+            admit ={"create":"deny"};
             res.write(JSON.stringify(admit));
             res.end();
         }
     })
 })
 
-// PROJECT
+// PROJECT Create
 router.route("/project/create").post(function(req,res){
     var mgr_id = req.body.mgr_id;
     var title = req.body.title;
@@ -296,13 +294,81 @@ router.route("/project/create").post(function(req,res){
     
 })
 
-
+//project list select
 router.route("/project/select").get(function(req,res){
     var user_id = req.query.user_id;
     console.log("======= Proejct Select =======\n");
     console.log("user_id: "+user_id);
     
     mysqlDB.query('select * from PROJECT pj where PROJ_STATUS=0 AND EXISTS ( select * from ATTENDENCE at where at.USER_ID = ? AND pj.PROJ_ID = at.PROJ_ID)',[user_id],function(err,rows,fields){
+        if(err){
+            console.log("error입니다")
+        }
+        else{
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+//task view select
+router.route("/taskView/select").get(function(req,res){
+    var proj_id = req.query.proj_id;
+    console.log("======= task Select =======\n");
+    console.log("proj_id: "+proj_id);
+    
+    mysqlDB.query('select * from POST_LIST where PROJ_ID = ?',[proj_id],function(err,rows,fields){
+        if(err){
+            console.log("error입니다")
+        }
+        else{
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+//big list select alert list
+router.route("/taskView/Big/select").get(function(req,res){
+    var proj_id = req.query.proj_id;
+    console.log("======= Big Task Select =======\n");
+    
+    mysqlDB.query('select BIG_ID, BIG_LEVEL, BIG_TITLE from POST_BIG where PROJ_ID = ?',[proj_id],function(err,rows,fields){
+        if(err){
+            console.log("error입니다")
+        }
+        else{
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+//middle list select alert list
+router.route("/taskView/Mid/select").get(function(req,res){
+    var big_id = req.query.big_id;
+    console.log("======= Mid Task Select =======\n");
+    
+    mysqlDB.query('select MID_ID, MID_LEVEL, MID_TITLE from POST_MID where BIG_ID = ?',[big_id],function(err,rows,fields){
+        if(err){
+            console.log("error입니다")
+        }
+        else{
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+
+//notilist list 
+router.route("/notification/select").get(function(req,res){
+    var proj_id = req.query.proj_id;
+    console.log("======= Notification Select =======\n");
+    
+    mysqlDB.query('select * from POST_NOTI where proj_id = ?',[proj_id],function(err,rows,fields){
         if(err){
             console.log("error입니다")
         }

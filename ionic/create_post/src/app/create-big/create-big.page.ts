@@ -19,8 +19,7 @@ export class CreateBigPage {
   hasAnotherDropZoneOver: boolean;
   response:string;
 
-  mgr_id : string;
-
+  
   constructor(
     // private transfer: FileTransfer,
     private loadingCtrl: LoadingController,
@@ -34,9 +33,6 @@ export class CreateBigPage {
     });
     storage.get_proj_id().then(val=>{
       this.body.projectID = val;
-    });
-    storage.get_mgr_id().then(val=>{
-       this.mgr_id = val;
     });
   }
   
@@ -63,13 +59,13 @@ export class CreateBigPage {
   }
   create_task(){
 
-    // this.body.BigStart = this.body.BigStart.substr(0,10) + " " +this.body.BigStart.split('T')[1].substr(0,8);
-    // this.body.BigEnd = this.body.BigEnd.substr(0,10) + " " +this.body.BigEnd.split('T')[1].substr(0,8);
-    // this.body.BigCreated = new Date().toISOString(); 
-    // this.body.BigCreated = this.body.BigCreated.substr(0,10) + " " +this.body.BigCreated.split('T')[1].substr(0,8);
+    this.body.BigStart = this.body.BigStart.substr(0,10) + " " +this.body.BigStart.split('T')[1].substr(0,8);
+    this.body.BigEnd = this.body.BigEnd.substr(0,10) + " " +this.body.BigEnd.split('T')[1].substr(0,8);
+    this.body.BigCreated = new Date().toISOString(); 
+    this.body.BigCreated = this.body.BigCreated.substr(0,10) + " " +this.body.BigCreated.split('T')[1].substr(0,8);
     console.log(this.body);
 
-    /*let ret = this.http.generate_task(this.task);
+    let ret = this.http.create_big_task(this.body);
     if(ret){
       this.alertController.create({
         header: 'Confirm!',
@@ -78,7 +74,7 @@ export class CreateBigPage {
         buttons: [{
           text: '확인',
           handler:() =>{
-            this.navCtrl.navigateForward('/generate-task');
+            this.navCtrl.navigateForward('/main');
           }
         }]
       }).then(alert=>{
@@ -95,7 +91,7 @@ export class CreateBigPage {
       }).then(alert=>{
         alert.present();
       });
-    }*/
+    }
   }
 
 }
