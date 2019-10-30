@@ -289,9 +289,6 @@ router.route("/project/create").post(function(req,res){
             res.end();
         }
     })
-
-
-    
 })
 
 //project list select
