@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, NavParams } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { FormGroup } from '@angular/forms';
+import { SignupPage } from '../signup/signup.page';
+import { Key } from 'protractor';
 
 
 @Component({
@@ -17,7 +19,8 @@ export class LoginPage {
 
   constructor(
     private http: HttpService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private navParm: NavParams
   ) { }
 
   login(form: FormGroup){

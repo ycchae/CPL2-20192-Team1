@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <form #form="ngForm" (ngSubmit)="create_task()">
+  <form #form="ngForm" (ngSubmit)="create_task()" enctype="multipart/form-data">
     <ion-list>
         <ion-item>
             <ion-label position="floating">제목</ion-label>

@@ -19,6 +19,7 @@ export class HttpService {
   header = new HttpHeaders(
     {'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'enctype': 'multipart/formdata',
     }
   );
 

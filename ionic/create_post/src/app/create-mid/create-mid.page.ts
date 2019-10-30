@@ -35,7 +35,7 @@ export class CreateMidPage implements OnInit{
     .then(val => {
       proj_id = val;
     });
-
+    proj_id = "6";
     this.http.get_task_big_list(proj_id).subscribe(
       (res: any[])  => {
         console.log(res);

@@ -34,6 +34,7 @@ export class CreateBigPage {
     storage.get_proj_id().then(val=>{
       this.body.projectID = val;
     });
+        
   }
   
   body = {
@@ -58,7 +59,7 @@ export class CreateBigPage {
     console.log(this.body.BigAttach);
   }
   create_task(){
-
+    this.body.projectID = "6"; 
     this.body.BigStart = this.body.BigStart.substr(0,10) + " " +this.body.BigStart.split('T')[1].substr(0,8);
     this.body.BigEnd = this.body.BigEnd.substr(0,10) + " " +this.body.BigEnd.split('T')[1].substr(0,8);
     this.body.BigCreated = new Date().toISOString(); 

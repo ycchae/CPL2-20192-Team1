@@ -22,12 +22,12 @@ app.use(cors());
 
 var storage = multer.diskStorage({
     destination : function(req,file,callback){
-        callback(null,'public')
+        callback(null,'public/file')
     }, //파일위치 정하기
     filename : function(req,file,callback){
        var extension = path.extname(file.originalname); //확장자
        var basename = path.basename(file.originalname,extension); //확장자 뺀 파일이름
-       callback(null,basename+Date.now()+extension);
+       callback(null,basename+extension);
     } //파일이름 정하기
 })
 
@@ -312,13 +312,33 @@ router.route("/project/select").get(function(req,res){
     })
 })
 
+
+//get Project name
+router.route("/projectName/select").get(function(req,res){
+    var proj_id = req.query.proj_id;
+    console.log("======= project Name Select =======\n");
+    console.log("proj_id: "+proj_id);
+    
+    mysqlDB.query('select PROJ_NAME from PROJECT where PROJ_ID = ?',[proj_id],function(err,rows,fields){
+        if(err){
+            console.log("error입니다")
+        }
+        else{
+            console.log(rows);
+            res.write(JSON.stringify(rows[0]));
+            res.end();
+        }
+    })
+})
+
+
 //task view select
 router.route("/taskView/select").get(function(req,res){
     var proj_id = req.query.proj_id;
     console.log("======= task Select =======\n");
     console.log("proj_id: "+proj_id);
     
-    mysqlDB.query('select * from POST_LIST where PROJ_ID = ?',[proj_id],function(err,rows,fields){
+    mysqlDB.query('select BIG_LEVEL, BIG_TITLE, MID_LEVEL, MID_TITLE, SML_TITLE from POST_LIST where PROJ_ID = ?',[proj_id],function(err,rows,fields){
         if(err){
             console.log("error입니다")
         }
@@ -334,7 +354,7 @@ router.route("/taskView/Big/select").get(function(req,res){
     var proj_id = req.query.proj_id;
     console.log("======= Big Task Select =======\n");
     
-    mysqlDB.query('select BIG_ID, BIG_LEVEL, BIG_TITLE from POST_BIG where PROJ_ID = ?',[proj_id],function(err,rows,fields){
+    mysqlDB.query('select BIG_ID, BIG_LEVEL, BIG_TITLE from POST_BIG where PROJ_ID = ? order by BIG_LEVEL',[proj_id],function(err,rows,fields){
         if(err){
             console.log("error입니다")
         }
@@ -350,7 +370,24 @@ router.route("/taskView/Mid/select").get(function(req,res){
     var big_id = req.query.big_id;
     console.log("======= Mid Task Select =======\n");
     
-    mysqlDB.query('select MID_ID, MID_LEVEL, MID_TITLE from POST_MID where BIG_ID = ?',[big_id],function(err,rows,fields){
+    mysqlDB.query('select MID_ID, MID_LEVEL, MID_TITLE from POST_MID where BIG_ID = ? order by MID_LEVEL',[big_id],function(err,rows,fields){
+        if(err){
+            console.log("error입니다")
+        }
+        else{
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+//small list select 
+router.route("/taskView/Sml/select").get(function(req,res){
+    var mid_id = req.query.mid_id;
+    console.log("======= Sml Task Select =======\n");
+    
+    mysqlDB.query('select SML_ID, SML_TITLE, SML_CREATED from POST_SML where MID_ID = ? order by SML_CREATED',[mid_id],function(err,rows,fields){
         if(err){
             console.log("error입니다")
         }
