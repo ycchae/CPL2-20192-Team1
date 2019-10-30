@@ -39,6 +39,7 @@ export class CreateBigPage {
        this.mgr_id = val;
     });
   }
+  attaches = new Set();
   
   body = {
     projectID   : '',
@@ -47,7 +48,7 @@ export class CreateBigPage {
     BigStart    : '',
     BigEnd      : '',
     BigDesc     : '',
-    BigAttach   : new Set(),
+    BigAttach   : '',
     BigStatus   : 0,
     BigAuthor   : '',
     BigCreated  : '',
@@ -55,14 +56,22 @@ export class CreateBigPage {
     BigProgress : 0
   }
 
-  attached : string = "";
-  setFiles(val){
-    this.attached += val + "\n";
-    this.body.BigAttach.add(val);
-    console.log(this.body.BigAttach);
+  setFiles(val){    
+    this.attaches.add(val);
+    console.log(this.attaches);
   }
   create_task(){
-
+    const setValues = this.attaches.values();
+    let i = 0;
+    let a = "{";
+    for(let single of setValues){
+      a += `${i}: "${single}", `;
+      i += 1;
+    }
+    a = a.slice(0, -2);
+    a+='}';
+    this.body.BigAttach = a;
+    
     // this.body.BigStart = this.body.BigStart.substr(0,10) + " " +this.body.BigStart.split('T')[1].substr(0,8);
     // this.body.BigEnd = this.body.BigEnd.substr(0,10) + " " +this.body.BigEnd.split('T')[1].substr(0,8);
     // this.body.BigCreated = new Date().toISOString(); 

@@ -34,8 +34,8 @@
           <ion-item>
             <ion-input name="attach[]" (input)="setFiles($event.target.value)" type="file"></ion-input>  
           </ion-item>
-          <ion-item>
-            <ion-label> {{ attached }} </ion-label>
+          <ion-item *ngFor="let attach of attaches">
+            <ion-label> {{ attach }} </ion-label>
           </ion-item>
         </ion-list>
 
