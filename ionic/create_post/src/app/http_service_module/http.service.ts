@@ -98,20 +98,45 @@ export class HttpService {
     );
   }
 
+  get_proj_name(proj_id : string) : Promise<{}>{
+    let URL = `${this.SERVER_ADDRESS}/projectName/select?proj_id=${proj_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_task_big_list(proj_id : string) : Observable<{}> {
+    let URL = `${this.SERVER_ADDRESS}/taskView/Big/select?proj_id=${proj_id}`;
+    return this.httpClient.get(URL, {headers: this.header});
+  }
+
+  get_task_mid_list(big_id : string) : Observable<{}> {
+    let URL = `${this.SERVER_ADDRESS}/taskView/Mid/select?big_id=${big_id}`;
+    return this.httpClient.get(URL, {headers: this.header});
+  }
+
+  get_task_sml_list(mid_id : string) : Observable<{}> {
+    let URL = `${this.SERVER_ADDRESS}/taskView/Sml/select?mid_id=${mid_id}`;
+    return this.httpClient.get(URL, {headers: this.header});
+  }
 
 
+  get_noti_list(proj_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/notification/select?proj_id=${proj_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
 
-  // save_id
-  // save_role
-  // logout
-  // out_role
-  
-  // logout(){
-  //   this.storage.del_id();
-  // }
+  get_task_big_listp(proj_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/taskView/Big/select?proj_id=${proj_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
 
-  // isLogin(){
-  //   return this.storage.get_uid() != null ? true : false;
-  // }
+  get_task_mid_listp(big_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/taskView/Mid/select?big_id=${big_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_task_sml_listp(mid_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/taskView/Sml/select?mid_id=${mid_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
   
 }
