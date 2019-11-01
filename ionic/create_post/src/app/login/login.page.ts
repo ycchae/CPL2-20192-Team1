@@ -19,8 +19,7 @@ export class LoginPage {
 
   constructor(
     private http: HttpService,
-    private navCtrl: NavController,
-    private navParm: NavParams
+    private navCtrl: NavController
   ) { }
 
   login(form: FormGroup){

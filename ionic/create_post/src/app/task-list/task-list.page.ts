@@ -28,27 +28,32 @@ export class TaskListPage implements OnInit {
   }
 
   async ngOnInit() {
-    await this.storage.get_proj_id().then(val => {
-      this.project_id = val;
-    });
+    await this.storage.get_proj_id().then(
+      val => {
+        this.project_id = val;
+      }
+    );
+    this.project_id = '6';
 
-    this.http.get_proj_name(this.project_id).then(res => {
-      this.project_name = res["PROJ_NAME"];
-    });
+    this.http.get_proj_name(this.project_id).then(
+      res => {
+        this.project_name = res["PROJ_NAME"];
+      }
+    );
 
-    this.http.get_noti_list(this.project_id).then(res => {
+    await this.http.get_noti_list(this.project_id).then(
       (res: any[]) => {
+        console.log(res);
         let tmp: Array<{}> = [];
         res.forEach(function (val, idx, arr) {
           tmp.push({
-            id: val["BIG_ID"],
-            title: val["BIG_TITLE"],
-            mids: []
+            id: val["NOTI_ID"],
+            title: val["NOTI_TITLE"],
           });
         });
         this.notis = tmp;
       }
-    });
+    );
 
 
 
