@@ -47,6 +47,23 @@
         </ng-container>
 
       </ion-list>
+
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button color="light">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-list side="start">
+          <ion-fab-button color="light" (click)="go_create_sml()">
+            <ion-label>소</ion-label>
+          </ion-fab-button>
+          <ion-fab-button *ngIf="isPM" color="light" (click)="go_create_mid()">
+            <ion-label>중</ion-label>
+          </ion-fab-button>
+          <ion-fab-button *ngIf="isPM" color="light" (click)="go_create_big()">
+            <ion-label>대</ion-label>
+          </ion-fab-button>
+        </ion-fab-list>
+      </ion-fab>
         
   </ion-content>
 </ion-app>

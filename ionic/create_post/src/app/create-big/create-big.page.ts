@@ -22,7 +22,7 @@ export class CreateBigPage {
 
   constructor(
     // private transfer: FileTransfer,
-    private loadingCtrl: LoadingController,
+    // private loadingCtrl: LoadingController,
     private http: HttpService,
     private alertController: AlertController,
     private navCtrl: NavController,
@@ -59,12 +59,10 @@ export class CreateBigPage {
   }
   create_task() {
 
-    const setValues = this.attaches.values();
-    let i = 0;
+    const setValues = Array.from(this.attaches.values());;
     let a = "{";
-    for (let single of setValues) {
-      a += `${i}: "${single}", `;
-      i += 1;
+    for (let i=0; i<setValues.length; ++i) {
+      a += `${i}: "${setValues[i]}", `;
     }
     a = a.slice(0, -2);
     a += '}';

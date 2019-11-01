@@ -8,6 +8,7 @@ import { StorageService } from '../storage_service_module/storage.service'
   styleUrls: ['./task-list.page.scss'],
 })
 export class TaskListPage implements OnInit {
+  isPM: boolean;
   project_id: string;
   project_name: string;
 
@@ -40,6 +41,7 @@ export class TaskListPage implements OnInit {
         this.project_name = res["PROJ_NAME"];
       }
     );
+    this.isPM = false;
 
     await this.http.get_noti_list(this.project_id).then(
       (res: any[]) => {
@@ -114,5 +116,15 @@ export class TaskListPage implements OnInit {
   }
   go_board(arg) {
     console.log(arg);
+  }
+
+  go_create_big(){
+    console.log("create big");
+  }
+  go_create_mid(){
+    console.log("create mid");
+  }
+  go_create_sml(){
+    console.log("create sml");
   }
 }
