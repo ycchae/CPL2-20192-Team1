@@ -88,11 +88,11 @@ export class CreateSmallPage implements OnInit {
       this.alertController.create({
         header: 'Confirm!',
         subHeader: '작업 추가 성공!',
-        message: '메인 화면으로 이동합니다.',
+        message: '업무리스트로 이동합니다.',
         buttons: [{
           text: '확인',
           handler:() =>{
-            this.navCtrl.navigateForward('/main');
+            this.navCtrl.navigateForward('/task-list');
           }
         }]
       }).then(alert=>{

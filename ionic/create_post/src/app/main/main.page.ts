@@ -30,12 +30,16 @@ export class MainPage implements OnInit {
         let tmp_projects: Array<{}> = [];
         res.forEach(function (value){
           console.log(value);
+          let start = value["PROJ_START"];
+          let end = value["PROJ_END"];
+          start = start.substr(0,10) + " " +start.split('T')[1].substr(0,5);
+          end = end.substr(0,10) + " " +end.split('T')[1].substr(0,5);
           tmp_projects.push({
             id: value["PROJ_ID"],
             name: value["PROJ_NAME"],
             progress: value["PROJ_PROGRESS"],
-            start: value["PROJ_START"],
-            end: value["PROJ_END"],
+            start: start,
+            end: end,
             desc: value["PROJ_DESC"],
             mgr_id: value["PROJ_MGR_UID"]
           });

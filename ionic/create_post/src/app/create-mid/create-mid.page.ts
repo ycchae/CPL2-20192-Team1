@@ -35,7 +35,7 @@ export class CreateMidPage implements OnInit{
     .then(val => {
       proj_id = val;
     });
-    proj_id = "6";
+    
     this.http.get_task_big_list(proj_id).subscribe(
       (res: any[])  => {
         console.log(res);
@@ -87,11 +87,11 @@ export class CreateMidPage implements OnInit{
       this.alertController.create({
         header: 'Confirm!',
         subHeader: '작업 추가 성공!',
-        message: '메인 화면으로 이동합니다.',
+        message: '업무리스트로 이동합니다.',
         buttons: [{
           text: '확인',
           handler:() =>{
-            this.navCtrl.navigateForward('/main');
+            this.navCtrl.navigateForward('/task-list');
           }
         }]
       }).then(alert=>{
