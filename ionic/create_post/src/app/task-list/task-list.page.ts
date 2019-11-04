@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../http_service_module/http.service'
 import { StorageService } from '../storage_service_module/storage.service'
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-task-list',
@@ -23,7 +24,8 @@ export class TaskListPage implements OnInit {
 
   constructor(
     private http: HttpService,
-    private storage: StorageService
+    private storage: StorageService,
+    private navCtrl : NavController
   ) {
 
   }
@@ -34,7 +36,7 @@ export class TaskListPage implements OnInit {
         this.project_id = val;
       }
     );
-    this.project_id = '6';
+    // this.project_id = '6';
 
     this.http.get_proj_name(this.project_id).then(
       res => {
@@ -42,6 +44,15 @@ export class TaskListPage implements OnInit {
       }
     );
     this.isPM = false;
+    await this.storage.get_uid().then(
+      uid => {
+        this.storage.get_mgr_id().then(
+          mgr => {
+            this.isPM = uid === mgr;
+          }
+        );
+      }
+    );
 
     await this.http.get_noti_list(this.project_id).then(
       (res: any[]) => {
@@ -119,12 +130,12 @@ export class TaskListPage implements OnInit {
   }
 
   go_create_big(){
-    console.log("create big");
+    this.navCtrl.navigateForward('/create-big');
   }
   go_create_mid(){
-    console.log("create mid");
+    this.navCtrl.navigateForward('/create-mid');
   }
   go_create_sml(){
-    console.log("create sml");
+    this.navCtrl.navigateForward('/create-small');
   }
 }

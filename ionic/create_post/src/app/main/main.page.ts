@@ -36,7 +36,8 @@ export class MainPage implements OnInit {
             progress: value["PROJ_PROGRESS"],
             start: value["PROJ_START"],
             end: value["PROJ_END"],
-            desc: value["PROJ_DESC"]
+            desc: value["PROJ_DESC"],
+            mgr_id: value["PROJ_MGR_UID"]
           });
         });
         this.projects = tmp_projects;
@@ -46,7 +47,7 @@ export class MainPage implements OnInit {
 
   project_click(project){
     this.storage.save_proj_id(project.id);
-    this.storage.save_mgr_id("mgr_id");
+    this.storage.save_mgr_id(project.mgr_id);
     this.navCtrl.navigateForward("/task-list");
   }
   goGenerateProject(){
