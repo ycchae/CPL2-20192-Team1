@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { FormGroup } from '@angular/forms';
-import { SignupPage } from '../signup/signup.page';
-import { Key } from 'protractor';
+import { StorageService } from '../storage_service_module/storage.service';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 
 @Component({
@@ -11,7 +11,7 @@ import { Key } from 'protractor';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss']
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   private user = {
     email: '',
     password: ''
@@ -19,8 +19,32 @@ export class LoginPage {
 
   constructor(
     private http: HttpService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private storage: StorageService
   ) { }
+
+  
+
+  async ngOnInit() {
+    let user_id: string;
+    await this.storage.get_uid()
+    .then(val=>{
+      user_id = val;
+    });
+
+    let pid: string;
+    let mgr_id: string;
+    await this.storage.get_mgr_id()
+    .then(val=>{
+      mgr_id = val;
+    })
+    await this.storage.get_proj_id()
+    .then(val=>{
+      pid = val;
+    })
+    if(user_id != null && user_id != "")
+      this.navCtrl.navigateForward('/main');
+  }
 
   login(form: FormGroup){
     this.http.login(form.value).subscribe(

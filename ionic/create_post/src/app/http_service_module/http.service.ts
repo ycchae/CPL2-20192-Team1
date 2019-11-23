@@ -17,9 +17,9 @@ export class HttpService {
 
   SERVER_ADDRESS: string = "http://54.180.89.77:9000";
   header = new HttpHeaders(
-    {'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'enctype': 'multipart/formdata',
+    {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     }
   );
 
@@ -60,10 +60,21 @@ export class HttpService {
     let URL = `${this.SERVER_ADDRESS}/project/select?user_id=${user_id}`;
     return this.httpClient.get(URL, {headers: this.header});
   }
+
+  upload(info) {
+    let URL = "http://54.180.89.77:9001/upload";
+    this.httpClient.post(URL, info, {headers: new HttpHeaders({'Content-Type': 'application/json',
+    'Accept': 'application/json','enctype': 'multipart/form-data'})})
+    .subscribe(
+       
+    );
+
+    return this.httpSubject.asObservable();
+  }
   
   create_big_task(info) {
     let URL = `${this.SERVER_ADDRESS}/task/createBIG`;
-    this.httpClient.post(URL, info, {headers: this.header})
+    this.httpClient.post(URL, info)//, {headers: this.header})
     .subscribe(
        tap( async res => {
         console.log("TASK Create"+ res["create"])
