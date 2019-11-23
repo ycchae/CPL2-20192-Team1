@@ -23,7 +23,7 @@ export class DetailsPage implements OnInit {
   //   }
   // }
 
-
+  
   data: any;
  
   constructor(private route: ActivatedRoute, private router: Router) {
@@ -35,6 +35,8 @@ export class DetailsPage implements OnInit {
     });
   }
  
-  ngOnInit() { }
+  ngOnInit() { 
+
+  }
 
 }
