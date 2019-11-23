@@ -17,7 +17,7 @@ export class CreateBigPage implements OnInit{
   // hasAnotherDropZoneOver: boolean;
   // response: string;
 
-  // uploadForm: FormGroup;
+//  uploadForm: FormGroup;
   attaches = new Set();
   attaches_name = new Set();
 
@@ -35,7 +35,7 @@ export class CreateBigPage implements OnInit{
     BigCreated: '',
     BigWeight: '',
     BigProgress: 0,
-    userFiles: new FileList()
+    userFiles: []
   }
   // formData : FormData;
   constructor(
@@ -96,7 +96,7 @@ export class CreateBigPage implements OnInit{
     // console.log(this.uploadForm.get('files'))
     const fileSetValues = Array.from(this.attaches.values());
     
-    this.body.userFiles.item() = fileSetValues;
+    this.body.userFiles = fileSetValues;
     console.log(this.body.userFiles)
     
     // for(let i=0; i<fileSetValues.length; ++i){

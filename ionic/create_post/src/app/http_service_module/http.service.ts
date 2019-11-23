@@ -15,7 +15,7 @@ export class HttpService {
     private storage: StorageService
   ) { }
 
-  SERVER_ADDRESS: string = "http://54.180.89.77:9000";
+  SERVER_ADDRESS: string = "http://54.180.89.180:9000";
   header = new HttpHeaders(
     {
       'Content-Type': 'application/json',
@@ -60,30 +60,19 @@ export class HttpService {
     let URL = `${this.SERVER_ADDRESS}/project/select?user_id=${user_id}`;
     return this.httpClient.get(URL, {headers: this.header});
   }
-
-  upload(info) {
-    let URL = "http://54.180.89.77:9001/upload";
-    this.httpClient.post(URL, info, {headers: new HttpHeaders({'Content-Type': 'application/json',
-    'Accept': 'application/json','enctype': 'multipart/form-data'})})
-    .subscribe(
-       
-    );
-
-    return this.httpSubject.asObservable();
-  }
   
-  create_big_task(info) {
+  create_big_task(info) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/task/createBIG`;
     this.httpClient.post(URL, info)//, {headers: this.header})
     .subscribe(
-       tap( async res => {
+       async res => {
         console.log("TASK Create"+ res["create"])
         if(res["cretae"] === "success"){
           this.httpSubject.next(true);
         }else{
           this.httpSubject.next(false);
         }
-      }),
+      },
       async error =>{
         console.log(error.status);
         console.log(error.error);
@@ -91,10 +80,10 @@ export class HttpService {
         this.httpSubject.next(false);
       }
     );
-    return this.httpSubject.asObservable();
+    return this.httpSubject.toPromise();
   }
 
-  create_mid_task(info) {
+  create_mid_task(info) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/task/createMID`;
     this.httpClient.post(URL, info, {headers: this.header})
     .subscribe(
@@ -113,7 +102,7 @@ export class HttpService {
         this.httpSubject.next(false);
       }
     );
-    return this.httpSubject.asObservable();
+    return this.httpSubject.toPromise();
   }
 
   create_sml_task(info) {
@@ -153,6 +142,7 @@ export class HttpService {
         }
       })
     );
+    
   }
 
   get_proj_name(proj_id : string) : Promise<{}>{

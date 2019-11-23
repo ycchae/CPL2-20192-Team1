@@ -34,6 +34,9 @@ export class TaskListPage implements OnInit {
     await this.storage.get_proj_id().then(
       val => {
         this.project_id = val;
+      },
+      error=>{
+        console.log(error);
       }
     );
     // this.project_id = '6';
@@ -41,16 +44,25 @@ export class TaskListPage implements OnInit {
     this.http.get_proj_name(this.project_id).then(
       res => {
         this.project_name = res["PROJ_NAME"];
+      },
+      error=>{
+        console.log(error);
       }
     );
     this.isPM = false;
     await this.storage.get_uid().then(
-      uid => {
-        this.storage.get_mgr_id().then(
+      async uid => {
+        await this.storage.get_mgr_id().then(
           mgr => {
             this.isPM = uid === mgr;
+          },
+          error=>{
+            console.log(error);
           }
         );
+      },
+      error=>{
+        console.log(error);
       }
     );
 
@@ -65,6 +77,9 @@ export class TaskListPage implements OnInit {
           });
         });
         this.notis = tmp;
+      },
+      error=>{
+        console.log(error);
       }
     );
 
@@ -81,6 +96,9 @@ export class TaskListPage implements OnInit {
           });
         });
         this.tasks = tmp;
+      },
+      error=>{
+        console.log(error);
       });
 
     for (let i = 0; i < this.tasks.length; ++i) {
@@ -95,6 +113,9 @@ export class TaskListPage implements OnInit {
             });
           });
           this.tasks[i]["mids"] = tmp;
+        },
+        error=>{
+          console.log(error);
         });
 
       this.bigIsOpen.push(new Map<string, boolean>().set(this.tasks[i]["id"], false));
@@ -111,6 +132,9 @@ export class TaskListPage implements OnInit {
               });
             });
             this.tasks[i]["mids"][j]["smls"] = tmp;
+          },
+          error=>{
+            console.log(error);
           });
 
         this.midIsOpen.push(new Map<string, boolean>().set(this.tasks[i]["mids"][j]["id"], false));
