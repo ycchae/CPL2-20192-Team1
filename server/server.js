@@ -23,42 +23,20 @@ app.use(cors());
 
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        var projectID = req.body.projectID;
-        var dir = `./public/${projectID}`
-        console.log(dir);
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
-        }
+        var dir = './public'    
         callback(null, dir);
     },
     filename: function (req, file, callback) {
         callback(null, file.originalname);
     }
 })
-var upload = multer({storage: storage});
-app.post("/upload", upload.array('files', 12), function (req, res, next){
-    res.end('over')
-})
-
-
-// var storage = multer.diskStorage({
-//     destination : function(req,file,callback){
-//         callback(null,'public/file')
-//     }, //파일위치 정하기
-//     filename : function(req,file,callback){
-//        var extension = path.extname(file.originalname); //확장자
-//        var basename = path.basename(file.originalname,extension); //확장자 뺀 파일이름
-//        callback(null,basename+extension);
-//     } //파일이름 정하기
-// })
-
-// var upload = multer({
-//     storage : storage,
-//     limits:{
-//         files:10,
-//         fileSize:1024*1024*1024
-//     }
-// });
+var upload = multer({
+    storage: storage,
+    limit: {
+        files: 12,
+        filesize: 1024*1024*50
+    }
+});
 
 var router = express.Router();
 app.use('/', router);
@@ -147,68 +125,53 @@ router.route("/user/login").post(function (req, res) {
 })
 
 
-router.route("/task/createBIG", upload.single('files')).post(function (req, res) {
+router.route("/task/createBIG").post(upload.array('files', 12), function (req, res) {
     console.log(req)
-    // var upload = multer(
-    //     {
-    //         storage: multer.diskStorage({
-    //             destination: function (req, file, callback) {
-    //                 var projectID = req.body.projectID;
-    //                 var dir = `./public`;
-    //                 if (!fs.existsSync(dir)) {
-    //                     fs.mkdirSync(dir);
-    //                 }
-    //                 callback(null, dir);
-    //             },
-    //             filename: function (req, file, callback) {
-    //                 callback(null, file.originalname);
-    //             }
-    //         })
-    //     }).array('files', 12);
 
+    var projectID = req.body.projectID;
+    var BigLevel = req.body.BigLevel;
+    var BigTitle = req.body.BigTitle;
+    var BigStart = req.body.BigStart;
+    var BigEnd = req.body.BigEnd;
+    var BigDesc = req.body.BigDesc;
 
-    // upload(req, res, function (err) {
-        var projectID = req.body.projectID;
-        var BigLevel = req.body.BigLevel;
-        var BigTitle = req.body.BigTitle;
-        var BigStart = req.body.BigStart;
-        var BigEnd = req.body.BigEnd;
-        var BigDesc = req.body.BigDesc;
+    var BigStatus = req.body.BigStatus;
+    var BigAuthor = req.body.BigAuthor;
+    var BigCreated = req.body.BigCreated;
+    var BigWeight = req.body.BigWeight;
+    var BigProgress = req.body.BigProgress;
 
-        var BigStatus = req.body.BigStatus;
-        var BigAuthor = req.body.BigAuthor;
-        var BigCreated = req.body.BigCreated;
-        var BigWeight = req.body.BigWeight;
-        var BigProgress = req.body.BigProgress;
+    console.log(`projectID : ${projectID} , BigLevel : ${BigLevel}, BigTitle : ${BigTitle}, BigStart : ${BigStart} , BigEnd : ${BigEnd}, BigDesc : ${BigDesc}, 
+            BigStatus : ${BigStatus}, BigAuthor : ${BigAuthor}, BigCreated : ${BigCreated} , BigWeight : ${BigWeight}, BigProgress : ${BigProgress}`);
 
-        console.log(`projectID : ${projectID} , BigLevel : ${BigLevel}, BigTitle : ${BigTitle}, BigStart : ${BigStart} , BigEnd : ${BigEnd}, BigDesc : ${BigDesc}, 
-             BigStatus : ${BigStatus}, BigAuthor : ${BigAuthor}, BigCreated : ${BigCreated} , BigWeight : ${BigWeight}, BigProgress : ${BigProgress}`);
+    var data = {
+        PROJ_ID: projectID, BIG_LEVEL: BigLevel, BIG_TITLE: BigTitle, BIG_START: BigStart, BIG_END: BigEnd, BIG_DESC: BigDesc,
+        BIG_STATUS: BigStatus, BIG_AUTHOR: BigAuthor, BIG_CREATED: BigCreated, BIG_WEIGHT: BigWeight, BIG_PROGRESS: BigProgress
+    };
 
-        var data = {
-            PROJ_ID: projectID, BIG_LEVEL: BigLevel, BIG_TITLE: BigTitle, BIG_START: BigStart, BIG_END: BigEnd, BIG_DESC: BigDesc,
-            BIG_STATUS: BigStatus, BIG_AUTHOR: BigAuthor, BIG_CREATED: BigCreated, BIG_WEIGHT: BigWeight, BIG_PROGRESS: BigProgress
-        };
-        mysqlDB.query('INSERT INTO POST_BIG set ?', data, function (err, results) {
-            var admit;
-            if (!err) {
-                admit = { "create": "success" };
-                console.log("Create task success");
-                // res.write(JSON.stringify(admit));
-                // res.end();
-            } else {
-                console.log("TASK INSERT ERROR");
-                admit = { "create": "deny" };
-                // res.write(JSON.stringify(admit));
-                // res.end();
+    mysqlDB.query('INSERT INTO POST_BIG set ?', data, function (err, results) {
+        var admit;
+        if (!err) {
+            
+            console.log("Create task success");
+            res.write(JSON.stringify(admit));
+
+            var dir = "./public/"+projectID+"/"+results.BIG_ID;
+            if(!fs.existsSync(dir)){
+                fs.mkdirSync(dir);
             }
-        })
-
-        if (err) {
-            return res.end("Upload wrong :(");
+            fs.rename("./public/not_complete_picture/"+files[0].originalname, dir+"/"+files[0].originalname, function(err){});        
+            
+            admit = { "create": "success" };
+            res.end();
+        } else {
+            console.log("TASK INSERT ERROR");
+            admit = { "create": "deny" };
+            res.write(JSON.stringify(admit));
+            res.end();
         }
-        res.end("Upload completed.");
-    // });
-    // res.end("yap");
+    })
+    
 })
 
 // GENERATE-TASK-Middle
@@ -465,6 +428,3 @@ router.route("/notification/select").get(function (req, res) {
         }
     })
 })
-
-
-//
