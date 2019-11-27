@@ -127,9 +127,9 @@ router.route("/user/login").post(function (req, res) {
 
 router.route("/task/createBIG").post(upload.array('userFiles', 12), function (req, res) {
     if(req.files != null)
-	files = req.files;
+	    files = req.files;
     else
-	files = []
+	    files = []
     var projectID = req.body.projectID;
     var BigLevel = req.body.BigLevel;
     var BigTitle = req.body.BigTitle;
