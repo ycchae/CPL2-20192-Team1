@@ -3,7 +3,7 @@ import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { StorageService } from '../storage_service_module/storage.service'
-// import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-create-big',
@@ -17,56 +17,58 @@ export class CreateBigPage implements OnInit{
   // hasAnotherDropZoneOver: boolean;
   // response: string;
 
-  // uploadForm: FormGroup;
+  uploadForm: FormGroup;
   attaches = new Set();
   attaches_name = new Set();
 
   author: string;
   projectID: string;
-  body = {
-    projectID: '',
-    BigTitle: '',
-    BigLevel: '',
-    BigStart: '',
-    BigEnd: '',
-    BigDesc: '',
-    BigStatus: 0,
-    BigAuthor: '',
-    BigCreated: '',
-    BigWeight: '',
-    BigProgress: 0,
-    userFiles: new FileList()
-  }
-  // formData : FormData;
+  // body = {
+  //   projectID: '',
+  //   BigTitle: '',
+  //   BigLevel: '',
+  //   BigStart: '',
+  //   BigEnd: '',
+  //   BigDesc: '',
+  //   BigStatus: 0,
+  //   BigAuthor: '',
+  //   BigCreated: '',
+  //   BigWeight: '',
+  //   BigProgress: 0,
+  //   userFiles: new FileList()
+  // }
+  formData : FormData;
   constructor(
     private http: HttpService,
     private alertController: AlertController,
     private navCtrl: NavController,
     private storage: StorageService,
-    // private formBuilder: FormBuilder
+    private formBuilder: FormBuilder
   ) {
     storage.get_uid().then(val => {
-      this.body.BigAuthor = val;
+      // this.body.BigAuthor = val;
+      this.author = val;
     });
     storage.get_proj_id().then(val => {
-      this.body.projectID = val;
+      // this.body.projectID = val;
+      this.projectID = val;
     });
-    // this.formData = new FormData();
+    this.formData = new FormData();
 
   }
 
   ngOnInit(){
-    // this.uploadForm = this.formBuilder.group({
-    //   // body: this.body,
-    //   // BigTitle: new FormControl(),
-    //   // BigLevel: new FormControl(),
-    //   // BigStart: new FormControl(),
-    //   // BigEnd: new FormControl(),
-    //   // BigWeight: new FormControl(),
-    //   // BigDesc: new FormControl(),
-    //   BigCreated: '',
-    //   files: new FormControl([''])
-    // });
+    this.uploadForm = this.formBuilder.group({
+      // body: this.body,
+      BigTitle: new FormControl(),
+      BigLevel: new FormControl(),
+      BigStart: new FormControl(),
+      BigEnd: new FormControl(),
+      BigWeight: new FormControl(),
+      BigDesc: new FormControl(),
+      BigCreated: '',
+      userFiles: new FormControl([''])
+    });
   }
 
   setFiles($event) {
@@ -96,36 +98,47 @@ export class CreateBigPage implements OnInit{
     // console.log(this.uploadForm.get('files'))
     const fileSetValues = Array.from(this.attaches.values());
     
-    this.body.userFiles.item() = fileSetValues;
-    console.log(this.body.userFiles)
+    // this.body.userFiles = fileSetValues;
+
+    // console.log(this.body.userFiles)
     
-    // for(let i=0; i<fileSetValues.length; ++i){
-      // formData.append('userFiles', fileSetValues[i]);
-    // }
-    // this.uploadForm.get('files').setValue(fileSetValues);
+  
+    // this.uploadForm.get('userFiles').setValue(fileSetValues);
     
-    // let start:string, end:string, created:string;
-    // start = this.uploadForm.get('BigStart').value;
-    // start = start.substr(0, 10) + " " + start.split('T')[1].substr(0, 8);
-    // end = this.uploadForm.get('BigEnd').value;
-    // end = end.substr(0, 10) + " " + end.split('T')[1].substr(0, 8);
-    // let now = new Date().toISOString();
-    // created = now.substr(0, 10) + " " + now.split('T')[1].substr(0, 8);
+    let start:string, end:string, created:string;
+    start = this.uploadForm.get('BigStart').value;
+    start = start.substr(0, 10) + " " + start.split('T')[1].substr(0, 8);
+    end = this.uploadForm.get('BigEnd').value;
+    end = end.substr(0, 10) + " " + end.split('T')[1].substr(0, 8);
+    let now = new Date().toISOString();
+    created = now.substr(0, 10) + " " + now.split('T')[1].substr(0, 8);
 
     
-    // formData.append('projectID', this.projectID);
-    // formData.append('BigAuthor', this.author);
-    // formData.append('BigStatus', '0');
-    // formData.append('BigProgress', '0');
-    // formData.append('BigTitle', this.uploadForm.get('BigTitle').value);
-    // formData.append('BigLevel', this.uploadForm.get('BigLevel').value);
-    // formData.append('BigStart', start);
-    // formData.append('BigEnd', end);
-    // formData.append('BigWeight', this.uploadForm.get('BigWeight').value);
-    // formData.append('BigDesc', this.uploadForm.get('BigDesc').value);
-    // formData.append('BigCreated', created);
+    this.formData.append('projectID', this.projectID);
+    this.formData.append('BigAuthor', this.author);
+    this.formData.append('BigStatus', '0');
+    this.formData.append('BigProgress', '0');
+    this.formData.append('BigTitle', this.uploadForm.get('BigTitle').value);
+    this.formData.append('BigLevel', this.uploadForm.get('BigLevel').value);
+    this.formData.append('BigStart', start);
+    this.formData.append('BigEnd', end);
+    this.formData.append('BigWeight', this.uploadForm.get('BigWeight').value);
+    this.formData.append('BigDesc', this.uploadForm.get('BigDesc').value);
+    this.formData.append('BigCreated', created);
     
-    // formData.append('userFiles', this.uploadForm.get('files').value);
+    let original_names = "";
+    console.log(this.uploadForm.get('userFiles').value);
+    this.attaches.forEach((file : File)=>{
+      this.formData.append('userFiles', file, file.name);
+      original_names += file.name+"/";
+    });
+    this.formData.append('BigAttach', original_names);
+    
+    // for(var i=0; i<fileSetValues.length; ++i){
+    //   this.formData.append('userFiles', fileSetValues[i]);
+    // }
+    
+    //this.uploadForm.get('files').value);
 
     // let a = "{";
     // for (let i=0; i<setValues.length; ++i) {
@@ -137,12 +150,12 @@ export class CreateBigPage implements OnInit{
 
     
 
-    this.body.BigStart = this.body.BigStart.substr(0, 10) + " " + this.body.BigStart.split('T')[1].substr(0, 8);
-    this.body.BigEnd = this.body.BigEnd.substr(0, 10) + " " + this.body.BigEnd.split('T')[1].substr(0, 8);
-    this.body.BigCreated = new Date().toISOString();
-    this.body.BigCreated = this.body.BigCreated.substr(0, 10) + " " + this.body.BigCreated.split('T')[1].substr(0, 8);
-    console.log(this.body);
-    this.http.create_big_task(this.body).then(
+    // this.body.BigStart = this.body.BigStart.substr(0, 10) + " " + this.body.BigStart.split('T')[1].substr(0, 8);
+    // this.body.BigEnd = this.body.BigEnd.substr(0, 10) + " " + this.body.BigEnd.split('T')[1].substr(0, 8);
+    // this.body.BigCreated = new Date().toISOString();
+    // this.body.BigCreated = this.body.BigCreated.substr(0, 10) + " " + this.body.BigCreated.split('T')[1].substr(0, 8);
+    // console.log(this.body);
+    this.http.create_big_task(this.formData).then(
       ret => {
         if (ret) {
             this.alertController.create({
@@ -176,7 +189,7 @@ export class CreateBigPage implements OnInit{
   }
 
   date_validate() : boolean{
-    let valid = this.body.BigStart < this.body.BigEnd;
+    let valid = true;//this.body.BigStart < this.body.BigEnd;
     console.log("vaild: " +valid)
 
     if(valid)
