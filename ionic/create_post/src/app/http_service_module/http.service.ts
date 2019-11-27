@@ -185,5 +185,11 @@ export class HttpService {
     let URL = `${this.SERVER_ADDRESS}/taskView/Sml/select?mid_id=${mid_id}`;
     return this.httpClient.get(URL, {headers: this.header}).toPromise();
   }
+
+  update_project_state(proj_id : string, proj_status : string) : Promise<{}>{
+    console.log("http");
+    let URL = `${this.SERVER_ADDRESS}/update-status/project?proj_id=${proj_id}&proj_status=${proj_status}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
   
 }
