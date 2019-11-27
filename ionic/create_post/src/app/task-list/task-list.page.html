@@ -3,7 +3,27 @@
     <ion-toolbar>
       <ion-title> {{ project_name }}</ion-title>
     </ion-toolbar>
+    <ion-fab vertical="top" horizontal="end" slot="fixed">
+      <ion-fab-button *ngIf="isPM" color="light">
+        <ion-icon name="settings"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="bottom">
+        <ion-fab-button color="light" (click) = "update_status('1')">
+          <ion-label>완료</ion-label>
+        </ion-fab-button>
+        <ion-fab-button color="light">
+          <ion-label>수정</ion-label>
+        </ion-fab-button>
+        <ion-fab-button color="light" (click) = "update_status('-1')">
+          <ion-label>삭제</ion-label>
+        </ion-fab-button>
+        <ion-fab-button color="light">
+          <ion-icon name="clipboard" (click) = "attend_dialog()"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
     
+
   </ion-header>
   <ion-content>
       <ion-list>    <!-- WHOLE -->
@@ -52,6 +72,9 @@
 
       </ion-list>
       
+      
+      
+
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button color="light">
           <ion-icon name="add"></ion-icon>

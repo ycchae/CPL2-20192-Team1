@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../http_service_module/http.service'
 import { StorageService } from '../storage_service_module/storage.service';
 import { NavController } from '@ionic/angular';
+import { DataService } from '../services/data.service'
 
 @Component({
   selector: 'app-main',
@@ -14,7 +15,8 @@ export class MainPage implements OnInit {
   constructor(
     private httpService : HttpService,
     private storage : StorageService,
-    private navCtrl : NavController
+    private navCtrl : NavController,
+    private dataService: DataService
   ) { }
 
   async ngOnInit() {
@@ -41,7 +43,8 @@ export class MainPage implements OnInit {
             start: start,
             end: end,
             desc: value["PROJ_DESC"],
-            mgr_id: value["PROJ_MGR_UID"]
+            mgr_id: value["PROJ_MGR_UID"],
+            proj_url: value["PROJ_URL"]
           });
         });
         this.projects = tmp_projects;
@@ -52,6 +55,7 @@ export class MainPage implements OnInit {
   project_click(project){
     this.storage.save_proj_id(project.id);
     this.storage.save_mgr_id(project.mgr_id);
+    this.dataService.setAttendLink(project.proj_url);
     this.navCtrl.navigateForward("/task-list");
   }
   goGenerateProject(){

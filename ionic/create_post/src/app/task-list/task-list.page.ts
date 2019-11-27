@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../http_service_module/http.service'
 import { StorageService } from '../storage_service_module/storage.service'
 import { NavController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
+import { DataService } from '../services/data.service'
 
 @Component({
   selector: 'app-task-list',
@@ -25,7 +27,9 @@ export class TaskListPage implements OnInit {
   constructor(
     private http: HttpService,
     private storage: StorageService,
-    private navCtrl : NavController
+    private navCtrl : NavController,
+    private alertCtrl: AlertController,
+    private dataService : DataService
   ) {
 
   }
@@ -161,5 +165,40 @@ export class TaskListPage implements OnInit {
   }
   go_create_sml(){
     this.navCtrl.navigateForward('/create-small');
+  }
+  clipboard_copy(val : string){
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = val;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  }
+  attend_dialog(){
+    let base_url = "54.180.89.180:9010/attend-project/"
+    base_url += this.dataService.getLink();
+    this.clipboard_copy(base_url);
+    this.alertCtrl.create({
+      header: '프로젝트 참가 링크',
+      subHeader: '클립보드에 복사 되었습니다.',
+      message: base_url, 
+      buttons: [{
+        text: '확인',
+        handler:() => {
+
+        }
+      }]
+    }).then(alert=>{
+      alert.present();
+    })
+  }
+  update_status(status: string){
+    console.log("update_status");
+    this.http.update_project_state(this.project_id,status).then(res=>{});
   }
 }
