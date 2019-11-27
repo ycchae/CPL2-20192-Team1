@@ -126,15 +126,17 @@ router.route("/user/login").post(function (req, res) {
 
 
 router.route("/task/createBIG").post(upload.array('userFiles', 12), function (req, res) {
-    console.log(req)
-
+    if(req.files != null)
+	files = req.files;
+    else
+	files = []
     var projectID = req.body.projectID;
     var BigLevel = req.body.BigLevel;
     var BigTitle = req.body.BigTitle;
     var BigStart = req.body.BigStart;
     var BigEnd = req.body.BigEnd;
     var BigDesc = req.body.BigDesc;
-
+    var BigAttach = req.body.BigAttach;
     var BigStatus = req.body.BigStatus;
     var BigAuthor = req.body.BigAuthor;
     var BigCreated = req.body.BigCreated;
@@ -145,7 +147,7 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
             BigStatus : ${BigStatus}, BigAuthor : ${BigAuthor}, BigCreated : ${BigCreated} , BigWeight : ${BigWeight}, BigProgress : ${BigProgress}`);
 
     var data = {
-        PROJ_ID: projectID, BIG_LEVEL: BigLevel, BIG_TITLE: BigTitle, BIG_START: BigStart, BIG_END: BigEnd, BIG_DESC: BigDesc,
+        PROJ_ID: projectID, BIG_LEVEL: BigLevel, BIG_TITLE: BigTitle, BIG_START: BigStart, BIG_END: BigEnd, BIG_DESC: BigDesc, BIG_ATTACHMENT: BigAttach,
         BIG_STATUS: BigStatus, BIG_AUTHOR: BigAuthor, BIG_CREATED: BigCreated, BIG_WEIGHT: BigWeight, BIG_PROGRESS: BigProgress
     };
 
@@ -155,16 +157,22 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
             
             console.log("Create task success");
 
-            var dir = "./public/"+projectID+"/"+results.BIG_ID;
-            if(!fs.existsSync(dir)){
-                fs.mkdirSync(dir);
-            }
-            fs.rename("./public/"+userFiles[0].originalname, dir+"/"+userFiles[0].originalname, function(err){});        
+            var dir = "./public/"+projectID;
+	    var dir2 = dir1+"/"+results["insertId"];
+            if(!fs.existsSync(dir1)){
+		fs.mkdirSync(dir1);
+               	fs.mkdirSync(dir2);
+            }else if(!fs.existsSync(dir2)){
+	    	fs.mkdirSync(dir2);
+	    }
+	    for(var i=0; i<files.length; ++i)
+            	fs.rename("./public/"+files[i].originalname, dir2+"/"+files[i].originalname, function(err){});        
             
             admit = { "create": "success" };
             res.write(JSON.stringify(admit));
 	    res.end();
         } else {
+	    console.log(err);
             console.log("TASK INSERT ERROR");
             admit = { "create": "deny" };
             res.write(JSON.stringify(admit));
