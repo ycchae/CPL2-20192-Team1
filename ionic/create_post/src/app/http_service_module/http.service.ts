@@ -191,5 +191,45 @@ export class HttpService {
     let URL = `${this.SERVER_ADDRESS}/update-status/project?proj_id=${proj_id}&proj_status=${proj_status}`;
     return this.httpClient.get(URL, {headers: this.header}).toPromise();
   }
+
+  insert_comment_big(big_id : string, bigco_author: string, bigcomment: string, bigco_time: string, bigco_status : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/insert/big-comment?BigID=${big_id}&BigCoAuthor=${bigco_author}&BigComment=${bigcomment}&BigTime=${bigco_time}&BigCoStatus=${bigco_status}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  insert_comment_mid(mid_id : string, midco_author: string, midcomment: string, midco_time: string, midco_status : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/insert/mid-comment?MidID=${mid_id}&MidCoAuthor=${midco_author}&MidComment=${midcomment}&MidTime=${midco_time}&MidCoStatus=${midco_status}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  insert_comment_sml(sml_id : string, smlco_author: string, smlcomment: string, smlco_time: string, smlco_status : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/insert/sml-comment?SmlID=${sml_id}&SmlCoAuthor=${smlco_author}&SmlComment=${smlcomment}&SmlTime=${smlco_time}&SmlCoStatus=${smlco_status}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  insert_comment_noti(noti_id : string, notico_author: string, noticomment: string, notico_time: string, notico_status : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/insert/noti-comment?NotiID=${noti_id}&NotiCoAuthor=${notico_author}&NotiComment=${noticomment}&NotiTime=${notico_time}&NotiCoStatus=${notico_status}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
   
+  get_comment_big_list(big_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/select/big-comment?big_id=${big_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_comment_mid_list(mid_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/select/mid-comment?mid_id=${mid_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_comment_sml_list(sml_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/select/sml-comment?sml_id=${sml_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_comment_noti_list(noti_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/select/noti-comment?noti_id=${noti_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
 }
