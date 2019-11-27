@@ -1,15 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { IonicModule } from '@ionic/angular';
 
-import { CreateMidPage } from './create-mid.page';
+import { BoardPage } from './board.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: CreateMidPage
+    component: BoardPage
   }
 ];
 
@@ -17,10 +18,9 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [CreateMidPage]
+  declarations: [BoardPage]
 })
-export class CreateMidPageModule {}
+export class BoardPageModule {}

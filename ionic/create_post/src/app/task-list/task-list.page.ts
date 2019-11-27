@@ -39,7 +39,6 @@ export class TaskListPage implements OnInit {
         console.log(error);
       }
     );
-    // this.project_id = '6';
 
     this.http.get_proj_name(this.project_id).then(
       res => {

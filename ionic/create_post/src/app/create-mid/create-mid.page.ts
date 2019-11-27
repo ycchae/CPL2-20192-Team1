@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
 import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
-import { StorageService } from '../storage_service_module/storage.service' 
+import { StorageService } from '../storage_service_module/storage.service'
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-create-mid',
@@ -11,37 +11,50 @@ import { StorageService } from '../storage_service_module/storage.service'
   styleUrls: ['./create-mid.page.scss'],
 })
 export class CreateMidPage implements OnInit{
-  hasBaseDropZoneOver: boolean;
-  hasAnotherDropZoneOver: boolean;
-  response:string;
+  uploadForm: FormGroup;
+  attaches = new Set();
 
   post_bigs: Array<{}> = [];
 
-   constructor(
-    private loadingCtrl: LoadingController,
+  author: string;
+  projectID: string;
+  BigID: string;
+  MidID: string;
+
+  formData: FormData;
+  constructor(
     private http: HttpService,
-    private alertController : AlertController,
+    private alertController: AlertController,
     private navCtrl: NavController,
-    private storage:StorageService
-  ) { 
-    storage.get_uid().then(val=>{
-      this.body.MidAuthor = val;
-    });
+    private storage: StorageService,
+    private formBuilder: FormBuilder
+  ) {
+    
   }
 
   async ngOnInit() {
-    let proj_id : string;
-    await this.storage.get_proj_id()
-    .then(val => {
-      proj_id = val;
+
+    this.uploadForm = this.formBuilder.group({
+      BigID: new FormControl(),
+      MidTitle: new FormControl(),
+      MidLevel: new FormControl(),
+      MidWeight: new FormControl(),
+      MidStart: new FormControl(),
+      MidEnd: new FormControl(),
+      MidDesc: new FormControl(),
+      userFiles: new FormControl([''])
     });
-    
-    this.http.get_task_big_list(proj_id).subscribe(
+
+    await this.storage.get_uid().then(val => {
+      this.author = val;
+    });
+    await this.storage.get_proj_id().then(val => {
+      this.projectID = val;
+    });
+    this.http.get_task_big_list(this.projectID).subscribe(
       (res: any[])  => {
-        console.log(res);
         let tmp_post_big: Array<{}> = [];
         res.forEach(function (value){
-          console.log(value);
           tmp_post_big.push({
             BigID: value["BIG_ID"],
             level: value["BIG_LEVEL"],
@@ -51,68 +64,77 @@ export class CreateMidPage implements OnInit{
         this.post_bigs = tmp_post_big;
       }
     );
-  }
-
-  body = {
-    BigID       :'',
-    MidLevel    :'',
-    MidTitle    :'',
-    MidStart    :'',
-    MidEnd      :'',
-    MidDesc     :'',
-    MidAttach   :new Set(),
-    MidStatus   :0,
-    MidAuthor   :'',
-    MidCreated  :''
-  }
-
-    
-  attached : string = "";
-  setFiles(val){
-    this.attached += val + "\n";
-    this.body.MidAttach.add(val);
-    console.log(this.body.MidAttach);
-  }
-  create_task(){
-    console.log(this.post_bigs);
-    this.body.MidStart = this.body.MidStart.substr(0,10) + " " +this.body.MidStart.split('T')[1].substr(0,8);
-    this.body.MidEnd = this.body.MidEnd.substr(0,10) + " " +this.body.MidEnd.split('T')[1].substr(0,8);
-    this.body.MidCreated = new Date().toISOString(); 
-    this.body.MidCreated = this.body.MidCreated.substr(0,10) + " " +this.body.MidCreated.split('T')[1].substr(0,8);
-     console.log(this.body);
-    
-
-    let ret = this.http.create_mid_task(this.body);
-    if(ret){
-      this.alertController.create({
-        header: 'Confirm!',
-        subHeader: '작업 추가 성공!',
-        message: '업무리스트로 이동합니다.',
-        buttons: [{
-          text: '확인',
-          handler:() =>{
-            this.navCtrl.navigateForward('/task-list');
-          }
-        }]
-      }).then(alert=>{
-        alert.present();
-      });
-    }else{
-      this.alertController.create({
-        header: 'Reject!',
-        subHeader: '작업 추가 실패',
-        message: '잠시후 다시 시도해주세요.',
-        buttons: [{
-          text: '확인'
-        }]
-      }).then(alert=>{
-        alert.present();
-      });
-    }
-  }
-
- 
   
+    
+  }
+    
+  setFiles($event) {
+    console.log($event);
+    let files : FileList;
+    files = $event.srcElement.files;
+    for(let i=0; i<files.length; ++i){
+      this.attaches.add(files[i]);
+    } 
+  }
+
+  create_task(){
+    let start:string, end:string, created:string;
+    start = this.uploadForm.get('MidStart').value;
+    start = start.substr(0, 10) + " " + start.split('T')[1].substr(0, 8);
+    end = this.uploadForm.get('MidEnd').value;
+    end = end.substr(0, 10) + " " + end.split('T')[1].substr(0, 8);
+    let now = new Date().toISOString();
+    created = now.substr(0, 10) + " " + now.split('T')[1].substr(0, 8);
+
+    let original_names = "";
+    this.attaches.forEach((file : File)=>{
+      this.formData.append('userFiles', file, file.name);
+      original_names += file.name+"/";
+    });
+
+    this.formData.append('ProjectID', this.projectID);
+    this.formData.append('BigID', this.BigID);
+    this.formData.append('MidLevel', this.uploadForm.get('MidLevel').value);
+    this.formData.append('MidTitle', this.uploadForm.get('MidTitle').value);
+    this.formData.append('MidStart', start);
+    this.formData.append('MidEnd', end);
+    this.formData.append('MidDesc', this.uploadForm.get('MidDesc').value);    
+    this.formData.append('MidStatus', '0');
+    this.formData.append('MidAuthor', this.author);
+    this.formData.append('MidCreated', created);
+    this.formData.append('MidAttach', original_names);
+
+    this.http.create_mid_task(this.formData).then(
+      ret => {
+        if (ret) {
+            this.alertController.create({
+              header: 'Confirm!',
+              subHeader: '작업 추가 성공!',
+              message: '업무리스트로 이동합니다.',
+              buttons: [{
+                text: '확인',
+                handler: () => {
+                  this.navCtrl.navigateForward('/task-list');
+                }
+              }]
+            }).then(alert => {
+              alert.present();
+            });
+        } else {
+          this.alertController.create({
+            header: 'Reject!',
+            subHeader: '작업 추가 실패',
+            message: '잠시후 다시 시도해주세요.',
+            buttons: [{
+              text: '확인'
+            }]
+          }).then(alert => {
+            alert.present();
+          });
+        }
+      }
+    );
+  }
 
   customAlertPostBig: any = {
     header: '대분류',
@@ -120,4 +142,23 @@ export class CreateMidPage implements OnInit{
     message: '',
     translucent: true
   };
+
+  date_validate() : boolean{
+    let valid = this.uploadForm.get('MidStart').value < this.uploadForm.get('MidEnd').value;
+    console.log("vaild: " +valid)
+
+    if(valid)
+      return valid;
+    
+    this.alertController.create({
+      header: 'Reject!',
+      subHeader: '종료 날짜 오류',
+      message: '종료 날짜는 시작 날짜보다 이후여야 합니다',
+      buttons: [{
+        text: '확인'
+      }]
+    }).then(alert => {
+      alert.present();
+    });
+  }
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
 import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
-import { StorageService } from '../storage_service_module/storage.service' 
+import { StorageService } from '../storage_service_module/storage.service'
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-create-small',
@@ -11,39 +11,49 @@ import { StorageService } from '../storage_service_module/storage.service'
   styleUrls: ['./create-small.page.scss'],
 })
 export class CreateSmallPage implements OnInit {
-  hasBaseDropZoneOver: boolean;
-  hasAnotherDropZoneOver: boolean;
-  response:string;
+  uploadForm: FormGroup;
+  attaches = new Set();
 
   post_bigs: Array<{}> = [];
   post_mids: Array<{}> = [];
-  BigID: any;
 
+  author: string;
+  projectID: string;
+  BigID: string;
+  MidID: string;
+
+  formData: FormData;
   constructor(
-    private loadingCtrl: LoadingController,
     private http: HttpService,
-    private alertController : AlertController,
+    private alertController: AlertController,
     private navCtrl: NavController,
-    private storage:StorageService
+    private storage: StorageService,
+    private formBuilder: FormBuilder
   ) {
-    storage.get_uid().then(val=>{
-      this.body.SmlAuthor = val;
-    });
-   }
+    
+  }
 
-   async ngOnInit() {
-    let proj_id : string;
-    await this.storage.get_proj_id()
-    .then(val => {
-      proj_id = val;
+  async ngOnInit() {
+    this.uploadForm = this.formBuilder.group({
+      BigID: new FormControl(),
+      MidID: new FormControl(),
+      SmlTitle: new FormControl(),
+      SmlStart: new FormControl(),
+      SmlEnd: new FormControl(),
+      SmlDesc: new FormControl(),
+      userFiles: new FormControl([''])
     });
-    proj_id = "6";
-    this.http.get_task_big_list(proj_id).subscribe(
-      (res: any[])  => {
-        console.log(res);
+
+    await this.storage.get_uid().then(val => {
+      this.author = val;
+    });
+    await this.storage.get_proj_id().then(val => {
+      this.projectID = val;
+    });
+    this.http.get_task_big_list(this.projectID).subscribe(
+      (res: any[]) => {
         let tmp_post_big: Array<{}> = [];
-        res.forEach(function (value){
-          console.log(value);
+        res.forEach(function (value) {
           tmp_post_big.push({
             BigID: value["BIG_ID"],
             level: value["BIG_LEVEL"],
@@ -55,70 +65,80 @@ export class CreateSmallPage implements OnInit {
     );
   }
 
-  body = {
-    MidID       :'',
-    SmlTitle    :'',
-    SmlStart    :'',
-    SmlEnd      :'',
-    SmlDesc     :'',
-    SmlAttach   :new Set(),
-    SmlStatus   :0,
-    SmlAuthor   :'',
-    SmlCreated  :''
-  }
-
-  attached : string = "";
-  setFiles(val){
-    this.attached += val + "\n";
-    this.body.SmlAttach.add(val);
-    console.log(this.body.SmlAttach);
-  }
-
-  create_task(){
-    console.log(this.post_bigs);
-    this.body.SmlStart = this.body.SmlStart.substr(0,10) + " " +this.body.SmlStart.split('T')[1].substr(0,8);
-    this.body.SmlEnd = this.body.SmlEnd.substr(0,10) + " " +this.body.SmlEnd.split('T')[1].substr(0,8);
-    this.body.SmlCreated = new Date().toISOString(); 
-    this.body.SmlCreated = this.body.SmlCreated.substr(0,10) + " " +this.body.SmlCreated.split('T')[1].substr(0,8);
-     console.log(this.body);
-    
-
-    let ret = this.http.create_sml_task(this.body);
-    if(ret){
-      this.alertController.create({
-        header: 'Confirm!',
-        subHeader: '작업 추가 성공!',
-        message: '업무리스트로 이동합니다.',
-        buttons: [{
-          text: '확인',
-          handler:() =>{
-            this.navCtrl.navigateForward('/task-list');
-          }
-        }]
-      }).then(alert=>{
-        alert.present();
-      });
-    }else{
-      this.alertController.create({
-        header: 'Reject!',
-        subHeader: '작업 추가 실패',
-        message: '잠시후 다시 시도해주세요.',
-        buttons: [{
-          text: '확인'
-        }]
-      }).then(alert=>{
-        alert.present();
-      });
+  setFiles($event) {
+    console.log($event);
+    let files: FileList;
+    files = $event.srcElement.files;
+    for (let i = 0; i < files.length; ++i) {
+      this.attaches.add(files[i]);
     }
   }
 
-  getMidList(){
+  create_task() {
+    let start: string, end: string, created: string;
+    start = this.uploadForm.get('SmlStart').value;
+    start = start.substr(0, 10) + " " + start.split('T')[1].substr(0, 8);
+    end = this.uploadForm.get('SmlEnd').value;
+    end = end.substr(0, 10) + " " + end.split('T')[1].substr(0, 8);
+    let now = new Date().toISOString();
+    created = now.substr(0, 10) + " " + now.split('T')[1].substr(0, 8);
+
+    let original_names = "";
+    this.attaches.forEach((file: File) => {
+      this.formData.append('userFiles', file, file.name);
+      original_names += file.name + "/";
+    });
+
+    this.formData.append('ProjectID', this.projectID);
+    this.formData.append('BigID', this.BigID);
+    this.formData.append('MidID', this.MidID);
+    this.formData.append('SmlTitle', this.uploadForm.get('SmlTitle').value);
+    this.formData.append('SmlStart', start);
+    this.formData.append('SmlEnd', end);
+    this.formData.append('SmlDesc', this.uploadForm.get('SmlDesc').value);
+    this.formData.append('SmlStatus', '0');
+    this.formData.append('SmlAuthor', this.author);
+    this.formData.append('SmlCreated', created);
+    this.formData.append('SmlAttach', original_names);
+
+    this.http.create_sml_task(this.formData).then(
+      ret => {
+        if (ret) {
+          this.alertController.create({
+            header: 'Confirm!',
+            subHeader: '작업 추가 성공!',
+            message: '업무리스트로 이동합니다.',
+            buttons: [{
+              text: '확인',
+              handler: () => {
+                this.navCtrl.navigateForward('/task-list');
+              }
+            }]
+          }).then(alert => {
+            alert.present();
+          });
+        } else {
+          this.alertController.create({
+            header: 'Reject!',
+            subHeader: '작업 추가 실패',
+            message: '잠시후 다시 시도해주세요.',
+            buttons: [{
+              text: '확인'
+            }]
+          }).then(alert => {
+            alert.present();
+          });
+        }
+      });
+  }
+
+  getMidList() {
     console.log(this.BigID);
     this.http.get_task_mid_list(this.BigID).subscribe(
-      (res: any[])  => {
+      (res: any[]) => {
         console.log(res);
         let tmp_post_mid: Array<{}> = [];
-        res.forEach(function (value){
+        res.forEach(function (value) {
           console.log(value);
           tmp_post_mid.push({
             MidID: value["MID_ID"],
@@ -130,7 +150,25 @@ export class CreateSmallPage implements OnInit {
       }
     );
   }
-  
+
+  date_validate() : boolean{
+    let valid = this.uploadForm.get('SmlStart').value < this.uploadForm.get('SmlEnd').value;
+    console.log("vaild: " +valid)
+
+    if(valid)
+      return valid;
+    
+    this.alertController.create({
+      header: 'Reject!',
+      subHeader: '종료 날짜 오류',
+      message: '종료 날짜는 시작 날짜보다 이후여야 합니다',
+      buttons: [{
+        text: '확인'
+      }]
+    }).then(alert => {
+      alert.present();
+    });
+  }
 
   customAlertPostBig: any = {
     header: '대분류',

@@ -12,31 +12,13 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 })
 
 export class CreateBigPage implements OnInit{
-  // uploader:FileUploader;
-  // hasBaseDropZoneOver: boolean;
-  // hasAnotherDropZoneOver: boolean;
-  // response: string;
-
   uploadForm: FormGroup;
   attaches = new Set();
   attaches_name = new Set();
 
   author: string;
   projectID: string;
-  // body = {
-  //   projectID: '',
-  //   BigTitle: '',
-  //   BigLevel: '',
-  //   BigStart: '',
-  //   BigEnd: '',
-  //   BigDesc: '',
-  //   BigStatus: 0,
-  //   BigAuthor: '',
-  //   BigCreated: '',
-  //   BigWeight: '',
-  //   BigProgress: 0,
-  //   userFiles: new FileList()
-  // }
+
   formData : FormData;
   constructor(
     private http: HttpService,
@@ -46,11 +28,9 @@ export class CreateBigPage implements OnInit{
     private formBuilder: FormBuilder
   ) {
     storage.get_uid().then(val => {
-      // this.body.BigAuthor = val;
       this.author = val;
     });
     storage.get_proj_id().then(val => {
-      // this.body.projectID = val;
       this.projectID = val;
     });
     this.formData = new FormData();
@@ -59,14 +39,12 @@ export class CreateBigPage implements OnInit{
 
   ngOnInit(){
     this.uploadForm = this.formBuilder.group({
-      // body: this.body,
       BigTitle: new FormControl(),
       BigLevel: new FormControl(),
       BigStart: new FormControl(),
       BigEnd: new FormControl(),
       BigWeight: new FormControl(),
       BigDesc: new FormControl(),
-      BigCreated: '',
       userFiles: new FormControl([''])
     });
   }
@@ -75,36 +53,12 @@ export class CreateBigPage implements OnInit{
     console.log($event);
     let files : FileList;
     files = $event.srcElement.files;
-    // files = $event.path[0].files;
     for(let i=0; i<files.length; ++i){
       this.attaches.add(files[i]);
-      this.attaches_name.add(files[i]["name"])
-      // this.formData.append('userFiles', files[i]);
     } 
   }
 
-  isetFiles($event) {
-    console.log($event);
-    let files : FileList;
-    // files = $event.srcElement.files;
-    files = $event.path[0].files;
-    for(let i=0; i<files.length; ++i){
-      this.attaches.add(files[i]);
-      this.attaches_name.add(files[i]["name"])
-      // this.formData.append('userFiles', files[i]);
-    } 
-  }
-  create_task() {
-    // console.log(this.uploadForm.get('files'))
-    const fileSetValues = Array.from(this.attaches.values());
-    
-    // this.body.userFiles = fileSetValues;
-
-    // console.log(this.body.userFiles)
-    
-  
-    // this.uploadForm.get('userFiles').setValue(fileSetValues);
-    
+  create_task() {    
     let start:string, end:string, created:string;
     start = this.uploadForm.get('BigStart').value;
     start = start.substr(0, 10) + " " + start.split('T')[1].substr(0, 8);
@@ -113,8 +67,13 @@ export class CreateBigPage implements OnInit{
     let now = new Date().toISOString();
     created = now.substr(0, 10) + " " + now.split('T')[1].substr(0, 8);
 
-    
-    this.formData.append('projectID', this.projectID);
+    let original_names = "";
+    this.attaches.forEach((file : File)=>{
+      this.formData.append('userFiles', file, file.name);
+      original_names += file.name+"/";
+    });
+
+    this.formData.append('ProjectID', this.projectID);
     this.formData.append('BigAuthor', this.author);
     this.formData.append('BigStatus', '0');
     this.formData.append('BigProgress', '0');
@@ -125,36 +84,8 @@ export class CreateBigPage implements OnInit{
     this.formData.append('BigWeight', this.uploadForm.get('BigWeight').value);
     this.formData.append('BigDesc', this.uploadForm.get('BigDesc').value);
     this.formData.append('BigCreated', created);
-    
-    let original_names = "";
-    console.log(this.uploadForm.get('userFiles').value);
-    this.attaches.forEach((file : File)=>{
-      this.formData.append('userFiles', file, file.name);
-      original_names += file.name+"/";
-    });
     this.formData.append('BigAttach', original_names);
     
-    // for(var i=0; i<fileSetValues.length; ++i){
-    //   this.formData.append('userFiles', fileSetValues[i]);
-    // }
-    
-    //this.uploadForm.get('files').value);
-
-    // let a = "{";
-    // for (let i=0; i<setValues.length; ++i) {
-    //   a += `${i}: "${setValues[i]}", `;
-    // }
-    // a = a.slice(0, -2);
-    // a += '}';
-    // this.body.BigAttach = a;
-
-    
-
-    // this.body.BigStart = this.body.BigStart.substr(0, 10) + " " + this.body.BigStart.split('T')[1].substr(0, 8);
-    // this.body.BigEnd = this.body.BigEnd.substr(0, 10) + " " + this.body.BigEnd.split('T')[1].substr(0, 8);
-    // this.body.BigCreated = new Date().toISOString();
-    // this.body.BigCreated = this.body.BigCreated.substr(0, 10) + " " + this.body.BigCreated.split('T')[1].substr(0, 8);
-    // console.log(this.body);
     this.http.create_big_task(this.formData).then(
       ret => {
         if (ret) {
@@ -189,7 +120,7 @@ export class CreateBigPage implements OnInit{
   }
 
   date_validate() : boolean{
-    let valid = true;//this.body.BigStart < this.body.BigEnd;
+    let valid = this.uploadForm.get('BigStart').value < this.uploadForm.get('BigEnd').value;
     console.log("vaild: " +valid)
 
     if(valid)

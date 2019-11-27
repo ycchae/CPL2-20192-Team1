@@ -11,7 +11,9 @@ const routes: Routes = [
   { path: 'generate-project', loadChildren: './generate-project/generate-project.module#GenerateProjectPageModule' },
   { path: 'create-big', loadChildren: './create-big/create-big.module#CreateBigPageModule' },
   { path: 'create-mid', loadChildren: './create-mid/create-mid.module#CreateMidPageModule' },
-  { path: 'create-small', loadChildren: './create-small/create-small.module#CreateSmallPageModule' },  { path: 'add-member', loadChildren: './add-member/add-member.module#AddMemberPageModule' }
+  { path: 'create-small', loadChildren: './create-small/create-small.module#CreateSmallPageModule' },
+  { path: 'add-member', loadChildren: './add-member/add-member.module#AddMemberPageModule' },  { path: 'board', loadChildren: './board/board.module#BoardPageModule' },
+
 
 ]
 

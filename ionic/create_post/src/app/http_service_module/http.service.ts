@@ -105,7 +105,7 @@ export class HttpService {
     return this.httpSubject.toPromise();
   }
 
-  create_sml_task(info) {
+  create_sml_task(info) : Promise<{}> {
     let URL = `${this.SERVER_ADDRESS}/task/createSML`;
     this.httpClient.post(URL, info, {headers: this.header})
     .subscribe(
@@ -124,7 +124,7 @@ export class HttpService {
         this.httpSubject.next(false);
       }
     );
-    return this.httpSubject.asObservable();
+    return this.httpSubject.toPromise();
   }
 
 
