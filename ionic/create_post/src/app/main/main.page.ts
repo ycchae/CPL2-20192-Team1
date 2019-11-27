@@ -16,9 +16,10 @@ export class MainPage implements OnInit {
     private httpService : HttpService,
     private storage : StorageService,
     private navCtrl : NavController,
-    private dataService: DataService
-  ) { }
-
+    private dataService: DataService,
+    
+  ) {  }
+  
   async ngOnInit() {
     let user_id : string;
     await this.storage.get_uid()
@@ -53,8 +54,9 @@ export class MainPage implements OnInit {
   }
 
   project_click(project){
-    this.storage.save_proj_id(project.id);
-    this.storage.save_mgr_id(project.mgr_id);
+    this.dataService.setProjectID(project.id);
+    this.dataService.setManagerID(project.mgr_id);
+    this.dataService.setProjectName(project.name);
     this.dataService.setAttendLink(project.proj_url);
     this.navCtrl.navigateForward("/task-list");
   }

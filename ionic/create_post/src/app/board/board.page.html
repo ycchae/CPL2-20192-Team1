@@ -1,9 +1,41 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title> {title} </ion-title>
+    <ion-title>{{title}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content fullscreen>
+  <ion-list>
+    <ion-item>
+      <ion-label position="stacked">프로젝트 기간</ion-label>
+      <ion-text> {{start +' ~ '+ end}} </ion-text>
+    </ion-item>
+    <ion-item>
+        <ion-label position="stacked">작성자</ion-label>
+        <ion-text> {{author}} </ion-text>
+    </ion-item>
+    <ion-item>
+        <ion-label position="stacked">작성일</ion-label>
+        <ion-text> {{created}} </ion-text>
+    </ion-item>
+    <ion-item>
+        <ion-label position="stacked">내용</ion-label>
+        <ion-text> {{desc}} </ion-text>
+    </ion-item>
+    <ion-item *ngFor="let attach of attaches">
+        <a href="http://54.180.89.180:9000/download?path=server.js"> {{ attach }}</a> 
+    </ion-item>
+  </ion-list>
+  <ion-label>댓글</ion-label>
+  <ion-list>
+    <ion-item>
+      <ion-text class="ion-margin-right" slot="start">{{author}}</ion-text>
+      <ion-label class="ion-no-margin">{{desc}}</ion-label>
+      <ion-note class="ion-no-margin" slot="end">{{created}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-input [(ngModel)]="commentBody" placeholder="내용을 입력하세요"></ion-input>
+      <ion-button>작성</ion-button>
+    </ion-item>
+  </ion-list>
 </ion-content>

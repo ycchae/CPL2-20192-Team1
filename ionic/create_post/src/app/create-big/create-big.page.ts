@@ -4,7 +4,7 @@ import { NavController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { StorageService } from '../storage_service_module/storage.service'
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-
+import { DataService } from '../services/data.service'
 @Component({
   selector: 'app-create-big',
   templateUrl: './create-big.page.html',
@@ -25,16 +25,15 @@ export class CreateBigPage implements OnInit{
     private alertController: AlertController,
     private navCtrl: NavController,
     private storage: StorageService,
+    private dataService: DataService,
     private formBuilder: FormBuilder
   ) {
     storage.get_uid().then(val => {
       this.author = val;
     });
-    storage.get_proj_id().then(val => {
-      this.projectID = val;
-    });
+    this.projectID = this.dataService.getProjectID();
+    
     this.formData = new FormData();
-
   }
 
   ngOnInit(){
@@ -70,7 +69,7 @@ export class CreateBigPage implements OnInit{
     let original_names = "";
     this.attaches.forEach((file : File)=>{
       this.formData.append('userFiles', file, file.name);
-      original_names += file.name+"/";
+      original_names += file.name+"*";
     });
 
     this.formData.append('ProjectID', this.projectID);

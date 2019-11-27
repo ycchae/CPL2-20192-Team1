@@ -35,34 +35,14 @@ export class TaskListPage implements OnInit {
   }
 
   async ngOnInit() {
-    await this.storage.get_proj_id().then(
-      val => {
-        this.project_id = val;
-      },
-      error=>{
-        console.log(error);
-      }
-    );
-
-    this.http.get_proj_name(this.project_id).then(
-      res => {
-        this.project_name = res["PROJ_NAME"];
-      },
-      error=>{
-        console.log(error);
-      }
-    );
+    this.project_id = this.dataService.getProjectID();
+    this.project_name = this.dataService.getProjectName();
+    let manager_id = this.dataService.getManagerID();
+    
     this.isPM = false;
     await this.storage.get_uid().then(
       async uid => {
-        await this.storage.get_mgr_id().then(
-          mgr => {
-            this.isPM = uid === mgr;
-          },
-          error=>{
-            console.log(error);
-          }
-        );
+        this.isPM = uid === manager_id;
       },
       error=>{
         console.log(error);

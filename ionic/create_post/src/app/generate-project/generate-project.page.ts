@@ -5,14 +5,13 @@ import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';
 import { StorageService } from '../storage_service_module/storage.service' 
 
-
 @Component({
   selector: 'app-generate-project',
   templateUrl: './generate-project.page.html',
   styleUrls: ['./generate-project.page.scss'],
 })
 export class GenerateProjectPage {
-
+  
  constructor(
    private http: HttpService,
    private alertController : AlertController,

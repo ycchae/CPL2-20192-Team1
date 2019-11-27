@@ -32,16 +32,6 @@ export class LoginPage implements OnInit {
       user_id = val;
     });
 
-    let pid: string;
-    let mgr_id: string;
-    await this.storage.get_mgr_id()
-    .then(val=>{
-      mgr_id = val;
-    })
-    await this.storage.get_proj_id()
-    .then(val=>{
-      pid = val;
-    })
     if(user_id != null && user_id != "")
       this.navCtrl.navigateForward('/main');
   }
