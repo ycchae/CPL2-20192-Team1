@@ -23,7 +23,7 @@ app.use(cors());
 
 var storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        var dir = './public'    
+        var dir = './public'
         callback(null, dir);
     },
     filename: function (req, file, callback) {
@@ -34,7 +34,7 @@ var upload = multer({
     storage: storage,
     limit: {
         files: 12,
-        filesize: 1024*1024*50
+        filesize: 1024 * 1024 * 50
     }
 });
 
@@ -126,11 +126,11 @@ router.route("/user/login").post(function (req, res) {
 
 
 router.route("/task/createBIG").post(upload.array('userFiles', 12), function (req, res) {
-    if(req.files != null)
-	    files = req.files;
+    if (req.files != null)
+        files = req.files;
     else
-	    files = []
-    var projectID = req.body.projectID;
+        files = [];
+    var projectID = req.body.ProjectID;
     var BigLevel = req.body.BigLevel;
     var BigTitle = req.body.BigTitle;
     var BigStart = req.body.BigStart;
@@ -154,36 +154,37 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
     mysqlDB.query('INSERT INTO POST_BIG set ?', data, function (err, results) {
         var admit;
         if (!err) {
-            
+
             console.log("Create task success");
 
-            var dir = "./public/"+projectID;
-	    var dir2 = dir1+"/"+results["insertId"];
-            if(!fs.existsSync(dir1)){
-		fs.mkdirSync(dir1);
-               	fs.mkdirSync(dir2);
-            }else if(!fs.existsSync(dir2)){
-	    	fs.mkdirSync(dir2);
-	    }
-	    for(var i=0; i<files.length; ++i)
-            	fs.rename("./public/"+files[i].originalname, dir2+"/"+files[i].originalname, function(err){});        
-            
+            var dir = proejctID + "/" + results["insertId"];
+            if (!fs.existsSync(dir))
+                fs.mkdirSync(dir);
+                
+            for (var i = 0; i < files.length; ++i)
+                fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
+
             admit = { "create": "success" };
             res.write(JSON.stringify(admit));
-	    res.end();
+            res.end();
         } else {
-	    console.log(err);
+            console.log(err);
             console.log("TASK INSERT ERROR");
             admit = { "create": "deny" };
             res.write(JSON.stringify(admit));
             res.end();
         }
     })
-    
+
 })
 
 // GENERATE-TASK-Middle
-router.route("/task/createMID").post(function (req, res) {
+router.route("/task/createMID").post(upload.array('userFiles', 12), function (req, res) {
+    if (req.files != null)
+        files = req.files;
+    else
+        files = [];    
+    var projectID = req.body.ProjectID;
     var BigID = req.body.BigID;
     var MidLevel = req.body.MidLevel;
     var MidTitle = req.body.MidTitle;
@@ -206,6 +207,14 @@ router.route("/task/createMID").post(function (req, res) {
     mysqlDB.query('INSERT INTO POST_MID set ?', data, function (err, results) {
         var admit;
         if (!err) {
+            
+            var dir = `${projectID}/${BigID}/${results["insertId"]}`;
+            if (!fs.existsSync(dir))
+                fs.mkdirSync(dir);
+                
+            for (var i = 0; i < files.length; ++i)
+                fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
+
             admit = { "create": "success" };
             console.log("Create task success");
             res.write(JSON.stringify(admit));
@@ -220,7 +229,13 @@ router.route("/task/createMID").post(function (req, res) {
 })
 
 // GENERATE-TASK-Small
-router.route("/task/createSML").post(function (req, res) {
+router.route("/task/createSML").post(upload.array('userFiles', 12), function (req, res) {
+    if (req.files != null)
+        files = req.files;
+    else
+        files = [];
+    var projectID = req.body.ProjectID;
+    var BigID = req.body.BigID;
     var MidID = req.body.MidID;
     var SmlTitle = req.body.SmlTitle;
     var SmlStart = req.body.SmlStart;
@@ -242,6 +257,13 @@ router.route("/task/createSML").post(function (req, res) {
     mysqlDB.query('INSERT INTO POST_SML set ?', data, function (err, results) {
         var admit;
         if (!err) {
+            var dir = `${projectID}/${BigID}/${MidID}/${results["insertId"]}`;
+            if (!fs.existsSync(dir))
+                fs.mkdirSync(dir);
+                
+            for (var i = 0; i < files.length; ++i)
+                fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
+
             admit = { "create": "success" };
             console.log("Create task success");
             res.write(JSON.stringify(admit));
@@ -263,8 +285,8 @@ router.route("/project/create").post(function (req, res) {
     var end_date = req.body.end_date;
     var desc = req.body.desc;
     var user_id = req.body.user_id;
-    var p_salt =  Math.round((new Date().valueOf() * Math.random())) + "";
-    var  hashURL = crypto.createHash("sha512").update(mgr_id + p_salt).digest("hex");
+    var p_salt = Math.round((new Date().valueOf() * Math.random())) + "";
+    var hashURL = crypto.createHash("sha512").update(mgr_id + p_salt).digest("hex");
     console.log(req.body);
     var data = {
         PROJ_MGR_UID: mgr_id,
@@ -281,15 +303,18 @@ router.route("/project/create").post(function (req, res) {
     mysqlDB.query('INSERT INTO PROJECT set ?', data, function (err, results) {
         var admit;
         if (!err) {
-            // admit={"create":"success"};
+            var projectID = results["insertId"];
+            var dir = `${projectID}`;
+            if(!fs.existsSync(dir))
+                fs.mkdirSync(dir);
+            
             console.log("PROJECT create success");
-            // res.write(JSON.stringify(admit));
-            // res.end();
             data = {
                 PROJ_ID: results.insertId,
                 USER_ID: user_id
             };
             console.log(data);
+
             mysqlDB.query('INSERT INTO ATTENDENCE set ?', data, function (err, results) {
                 var admit;
                 if (!err) {
@@ -367,7 +392,7 @@ router.route("/projectInfo/select").get(function (req, res) {
     mysqlDB.query('select PROJ_ID, PROJ_NAME, PROJ_MGR_UID, PROJ_DESC from PROJECT where PROJ_URL = ?', [proj_url], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
-        }   
+        }
         else {
             console.log(rows);
             res.write(JSON.stringify(rows[0]));
@@ -487,3 +512,20 @@ router.route("/attend/member").post(function (req, res) {
         }
     })
 })
+
+router.route("/update-status/project").get(function(req,res){ //프로젝트 상태 변경
+    var projectID = req.query.proj_id;
+    var projectSTATUS = req.query.proj_status;
+    mysqlDB.query('update PROJECT set PROJ_STATUS = ? where PROJ_ID=?',[projectSTATUS,projectID],function(err,rows,fields){
+        var project;
+        if(err){
+            console.log("에러 발생");
+            project = {"check":"no"}
+            res.send(JSON.stringify(project))
+        }else{
+            console.log("상태변경 성공");
+            project = {"check":"yes"}
+            res.send(JSON.stringify(project))
+        }
+    })
+});
