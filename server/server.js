@@ -125,16 +125,18 @@ router.route("/user/login").post(function (req, res) {
 })
 
 
-router.route("/task/createBIG").post(upload.array('files', 12), function (req, res) {
-    console.log(req)
-
+router.route("/task/createBIG").post(upload.array('userFiles', 12), function (req, res) {
+    if(req.files != null)
+	files = req.files;
+    else
+	files = []
     var projectID = req.body.projectID;
     var BigLevel = req.body.BigLevel;
     var BigTitle = req.body.BigTitle;
     var BigStart = req.body.BigStart;
     var BigEnd = req.body.BigEnd;
     var BigDesc = req.body.BigDesc;
-
+    var BigAttach = req.body.BigAttach;
     var BigStatus = req.body.BigStatus;
     var BigAuthor = req.body.BigAuthor;
     var BigCreated = req.body.BigCreated;
@@ -145,7 +147,7 @@ router.route("/task/createBIG").post(upload.array('files', 12), function (req, r
             BigStatus : ${BigStatus}, BigAuthor : ${BigAuthor}, BigCreated : ${BigCreated} , BigWeight : ${BigWeight}, BigProgress : ${BigProgress}`);
 
     var data = {
-        PROJ_ID: projectID, BIG_LEVEL: BigLevel, BIG_TITLE: BigTitle, BIG_START: BigStart, BIG_END: BigEnd, BIG_DESC: BigDesc,
+        PROJ_ID: projectID, BIG_LEVEL: BigLevel, BIG_TITLE: BigTitle, BIG_START: BigStart, BIG_END: BigEnd, BIG_DESC: BigDesc, BIG_ATTACHMENT: BigAttach,
         BIG_STATUS: BigStatus, BIG_AUTHOR: BigAuthor, BIG_CREATED: BigCreated, BIG_WEIGHT: BigWeight, BIG_PROGRESS: BigProgress
     };
 
@@ -154,17 +156,23 @@ router.route("/task/createBIG").post(upload.array('files', 12), function (req, r
         if (!err) {
             
             console.log("Create task success");
-            res.write(JSON.stringify(admit));
 
-            var dir = "./public/"+projectID+"/"+results.BIG_ID;
-            if(!fs.existsSync(dir)){
-                fs.mkdirSync(dir);
-            }
-            fs.rename("./public/not_complete_picture/"+files[0].originalname, dir+"/"+files[0].originalname, function(err){});        
+            var dir = "./public/"+projectID;
+	    var dir2 = dir1+"/"+results["insertId"];
+            if(!fs.existsSync(dir1)){
+		fs.mkdirSync(dir1);
+               	fs.mkdirSync(dir2);
+            }else if(!fs.existsSync(dir2)){
+	    	fs.mkdirSync(dir2);
+	    }
+	    for(var i=0; i<files.length; ++i)
+            	fs.rename("./public/"+files[i].originalname, dir2+"/"+files[i].originalname, function(err){});        
             
             admit = { "create": "success" };
-            res.end();
+            res.write(JSON.stringify(admit));
+	    res.end();
         } else {
+	    console.log(err);
             console.log("TASK INSERT ERROR");
             admit = { "create": "deny" };
             res.write(JSON.stringify(admit));
@@ -255,6 +263,8 @@ router.route("/project/create").post(function (req, res) {
     var end_date = req.body.end_date;
     var desc = req.body.desc;
     var user_id = req.body.user_id;
+    var p_salt =  Math.round((new Date().valueOf() * Math.random())) + "";
+    var  hashURL = crypto.createHash("sha512").update(mgr_id + p_salt).digest("hex");
     console.log(req.body);
     var data = {
         PROJ_MGR_UID: mgr_id,
@@ -263,7 +273,9 @@ router.route("/project/create").post(function (req, res) {
         PROJ_END: end_date,
         PROJ_DESC: desc,
         PROJ_PROGRESS: 0.00,
-        PROJ_STATUS: 0
+        PROJ_STATUS: 0,
+        PROJ_URL: hashURL,
+        SALT: p_salt
     };
     console.log(data);
     mysqlDB.query('INSERT INTO PROJECT set ?', data, function (err, results) {
@@ -325,6 +337,8 @@ router.route("/project/select").get(function (req, res) {
 })
 
 
+
+
 //get Project name
 router.route("/projectName/select").get(function (req, res) {
     var proj_id = req.query.proj_id;
@@ -335,6 +349,25 @@ router.route("/projectName/select").get(function (req, res) {
         if (err) {
             console.log("error입니다")
         }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows[0]));
+            res.end();
+        }
+    })
+})
+
+
+//get Project Info
+router.route("/projectInfo/select").get(function (req, res) {
+    var proj_url = req.query.proj_url;
+    console.log("======= project Name Select =======\n");
+    console.log("proj_url: " + proj_url);
+
+    mysqlDB.query('select PROJ_ID, PROJ_NAME, PROJ_MGR_UID, PROJ_DESC from PROJECT where PROJ_URL = ?', [proj_url], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }   
         else {
             console.log(rows);
             res.write(JSON.stringify(rows[0]));
@@ -424,6 +457,32 @@ router.route("/notification/select").get(function (req, res) {
         else {
             console.log(rows);
             res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+
+// Attend-project-member
+router.route("/attend/member").post(function (req, res) {
+    var projectID = req.body.proj_id;
+    var userID = req.body.user_id;
+    console.log(`projectID : ${projectID} , userID : ${userID}`);
+
+    var data = {
+        PROJ_ID: projectID, USER_ID: userID
+    };
+    mysqlDB.query('INSERT INTO ATTENDENCE set ?', data, function (err, results) {
+        var admit;
+        if (!err) {
+            admit = { "attend": "success" };
+            console.log("Add member success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        } else {
+            console.log("Add member ERROR");
+            admit = { "attend": "deny" };
+            res.write(JSON.stringify(admit));
             res.end();
         }
     })
