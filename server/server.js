@@ -157,7 +157,8 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
 
             console.log("Create task success");
 
-            var dir = proejctID + "/" + results["insertId"];
+           
+            var dir = "./public/" + projectID + "/" + results["insertId"];
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
@@ -208,7 +209,7 @@ router.route("/task/createMID").post(upload.array('userFiles', 12), function (re
         var admit;
         if (!err) {
             
-            var dir = `${projectID}/${BigID}/${results["insertId"]}`;
+            var dir = `./public/${projectID}/${BigID}/${results["insertId"]}`;
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
@@ -257,7 +258,7 @@ router.route("/task/createSML").post(upload.array('userFiles', 12), function (re
     mysqlDB.query('INSERT INTO POST_SML set ?', data, function (err, results) {
         var admit;
         if (!err) {
-            var dir = `${projectID}/${BigID}/${MidID}/${results["insertId"]}`;
+            var dir = `./public/${projectID}/${BigID}/${MidID}/${results["insertId"]}`;
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
@@ -304,7 +305,7 @@ router.route("/project/create").post(function (req, res) {
         var admit;
         if (!err) {
             var projectID = results["insertId"];
-            var dir = `${projectID}`;
+            var dir = `./public/${projectID}`;
             if(!fs.existsSync(dir))
                 fs.mkdirSync(dir);
             
@@ -360,7 +361,23 @@ router.route("/project/select").get(function (req, res) {
         }
     })
 })
+//project list select
+router.route("/one-project/select").get(function (req, res) {
+    var proj_id = req.query.proj_id;
+    console.log("======= Proejct Select =======\n");
+    console.log("proj_id: " + proj_id);
 
+    mysqlDB.query('select * from PROJECT where PROJ_ID = ?)', [proj_id], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
 
 
 
@@ -402,29 +419,13 @@ router.route("/projectInfo/select").get(function (req, res) {
 })
 
 
-//task view select
-router.route("/taskView/select").get(function (req, res) {
-    var proj_id = req.query.proj_id;
-    console.log("======= task Select =======\n");
-    console.log("proj_id: " + proj_id);
 
-    mysqlDB.query('select BIG_LEVEL, BIG_TITLE, MID_LEVEL, MID_TITLE, SML_TITLE from POST_LIST where PROJ_ID = ?', [proj_id], function (err, rows, fields) {
-        if (err) {
-            console.log("error입니다")
-        }
-        else {
-            console.log(rows);
-            res.write(JSON.stringify(rows));
-            res.end();
-        }
-    })
-})
 //big list select alert list
 router.route("/taskView/Big/select").get(function (req, res) {
     var proj_id = req.query.proj_id;
     console.log("======= Big Task Select =======\n");
 
-    mysqlDB.query('select BIG_ID, BIG_LEVEL, BIG_TITLE from POST_BIG where PROJ_ID = ? order by BIG_LEVEL', [proj_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_BIG where PROJ_ID = ? order by BIG_LEVEL', [proj_id], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
         }
@@ -440,7 +441,7 @@ router.route("/taskView/Mid/select").get(function (req, res) {
     var big_id = req.query.big_id;
     console.log("======= Mid Task Select =======\n");
 
-    mysqlDB.query('select MID_ID, MID_LEVEL, MID_TITLE from POST_MID where BIG_ID = ? order by MID_LEVEL', [big_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_MID where BIG_ID = ? order by MID_LEVEL', [big_id], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
         }
@@ -457,7 +458,7 @@ router.route("/taskView/Sml/select").get(function (req, res) {
     var mid_id = req.query.mid_id;
     console.log("======= Sml Task Select =======\n");
 
-    mysqlDB.query('select SML_ID, SML_TITLE, SML_CREATED from POST_SML where MID_ID = ? order by SML_CREATED', [mid_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_SML where MID_ID = ? order by SML_CREATED', [mid_id], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
         }
@@ -529,3 +530,190 @@ router.route("/update-status/project").get(function(req,res){ //프로젝트 상
         }
     })
 });
+
+router.route('/download').get(function(req, res){
+  const file = req.query.path;
+  res.download(file);
+});
+
+
+router.route("/insert/big-comment").get(function (req, res) {
+    
+    var BigID = req.query.BigID;
+    var BigCoAuthor = req.query.BigCoAuthor;
+    var BigComment = req.query.BigComment;
+    var BigTime = req.query.BigTime;
+    var BigCoStatus = req.query.BigCoStatus;
+    console.log(`BigID : ${BigID} , BigCoAuthor : ${BigCoAuthor}, BigComment : ${BigComment}, BigTime : ${BigTime} , BigCoStatus : ${BigCoStatus}`);
+
+    var data = { BIG_ID: BigID, BIGC_AUTHOR: BigCoAuthor, BIGC_COMMENT: BigComment, BIGC_TIME: BigTime, BIGC_STATUS: BigCoStatus };
+    mysqlDB.query('INSERT INTO COMMENT_BIG set ?', data, function (err, results) {
+        var admit;
+        if (!err) {
+            admit = { "insert": "success" };
+            console.log("Insert comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+            console.log(results);
+        } else {
+            console.log("INSERT ERROR");
+            admit = { "insert": "deny" };
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+router.route("/insert/mid-comment").get(function (req, res) {
+    
+    var MidID = req.query.MidID;
+    var MidCoAuthor = req.query.MidCoAuthor;
+    var MidComment = req.query.MidComment;
+    var MidTime = req.query.MidTime;
+    var MidCoStatus = req.query.MidCoStatus;
+    console.log(`MidID : ${MidID} , MidCoAuthor : ${MidCoAuthor}, MidComment : ${MidComment}, MidTime : ${MidTime} , MidCoStatus : ${MidCoStatus}`);
+
+    var data = { MID_ID: MidID, MIDC_AUTHOR: MidCoAuthor, MIDC_COMMENT: MidComment, MIDC_TIME: MidTime, MIDC_STATUS: MidCoStatus };
+    mysqlDB.query('INSERT INTO COMMENT_MID set ?', data, function (err, results) {
+        var admit;
+        if (!err) {
+            admit = { "insert": "success" };
+            console.log("Insert comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+            console.log(results);
+        } else {
+            console.log("INSERT ERROR");
+            admit = { "insert": "deny" };
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+
+router.route("/insert/small-comment").get(function (req, res) {
+    
+    var SmlID = req.query.SmlID;
+    var SmlCoAuthor = req.query.SmlCoAuthor;
+    var SmlComment = req.query.SmlComment;
+    var SmlTime = req.query.SmlTime;
+    var SmlCoStatus = req.query.SmlCoStatus;
+    console.log(`SmlID : ${SmlID} , SmlCoAuthor : ${SmlCoAuthor}, SmlComment : ${SmlComment}, SmlTime : ${SmlTime} , SmlCoStatus : ${SmlCoStatus}`);
+
+    var data = { SML_ID: SmlID, SMLC_AUTHOR: SmlCoAuthor, SMLC_COMMENT: SmlComment, SMLC_TIME: SmlTime, SMLC_STATUS: SmlCoStatus };
+    mysqlDB.query('INSERT INTO COMMENT_SML set ?', data, function (err, results) {
+        var admit;
+        if (!err) {
+            admit = { "insert": "success" };
+            console.log("Insert comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+            console.log(results);
+        } else {
+            console.log("INSERT ERROR");
+            admit = { "insert": "deny" };
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+
+
+router.route("/insert/noti-comment").get(function (req, res) {
+    
+    var NotiID = req.query.NotiID;
+    var NotiCoAuthor = req.query.NotiCoAuthor;
+    var NotiComment = req.query.NotiComment;
+    var NotiTime = req.query.NotiTime;
+    var NotiCoStatus = req.query.NotiCoStatus;
+    console.log(`NotiID : ${NotiID} , NotiCoAuthor : ${NotiCoAuthor}, NotiComment : ${NotiComment}, NotiTime : ${NotiTime} , NotiCoStatus : ${NotiCoStatus}`);
+
+    var data = { NOTI_ID: NotiID, NOTIC_AUTHOR: NotiCoAuthor, NOTIC_COMMENT: NotiComment, NOTIC_TIME: NotiTime, NOTIC_STATUS: NotiCoStatus };
+    mysqlDB.query('INSERT INTO COMMENT_NOTI set ?', data, function (err, results) {
+        var admit;
+        if (!err) {
+            admit = { "insert": "success" };
+            console.log("Insert comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+            console.log(results);
+        } else {
+            console.log("INSERT ERROR");
+            admit = { "insert": "deny" };
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+
+router.route("/select/big-comment").get(function (req, res) {
+    var BigID = req.query.big_id;
+    console.log("=======Big Comment Select =======\n");
+    console.log("BigID: " + BigID);
+
+    mysqlDB.query('select * from COMMENT_BIG where BIG_ID = ?', [BigID], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+router.route("/select/mid-comment").get(function (req, res) {
+    var MidID = req.query.mid_id;
+    console.log("=======Mid Comment Select =======\n");
+    console.log("MidID: " + MidID);
+
+    mysqlDB.query('select * from COMMENT_MID where MID_ID = ?', [MidID], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+router.route("/select/sml-comment").get(function (req, res) {
+    var SmlID = req.query.sml_id;
+    console.log("=======Sml Comment Select =======\n");
+    console.log("SmlID: " + SmlID);
+
+    mysqlDB.query('select * from COMMENT_SML where SML_ID = ?', [SmlID], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+
+router.route("/select/noti-comment").get(function (req, res) {
+    var NotiID = req.query.noti_id;
+    console.log("=======Noti Comment Select =======\n");
+    console.log("NotiID: " + NotiID);
+
+    mysqlDB.query('select * from COMMENT_NOTI where NOTI_ID = ?', [NotiID], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
