@@ -20,8 +20,6 @@ export class CreateSmallPage implements OnInit {
 
   author: string;
   projectID: string;
-  BigID: string;
-  MidID: string;
 
   formData: FormData;
   constructor(
@@ -32,7 +30,7 @@ export class CreateSmallPage implements OnInit {
     private dataService: DataService,
     private formBuilder: FormBuilder
   ) {
-    
+    this.formData = new FormData();
   }
 
   async ngOnInit() {
@@ -91,8 +89,8 @@ export class CreateSmallPage implements OnInit {
     });
 
     this.formData.append('ProjectID', this.projectID);
-    this.formData.append('BigID', this.BigID);
-    this.formData.append('MidID', this.MidID);
+    this.formData.append('BigID', this.uploadForm.get('BigID').value);
+    this.formData.append('MidID', this.uploadForm.get('MidID').value);
     this.formData.append('SmlTitle', this.uploadForm.get('SmlTitle').value);
     this.formData.append('SmlStart', start);
     this.formData.append('SmlEnd', end);
@@ -134,8 +132,8 @@ export class CreateSmallPage implements OnInit {
   }
 
   getMidList() {
-    console.log(this.BigID);
-    this.http.get_task_mid_list(this.BigID).subscribe(
+    var BigID = this.uploadForm.get('BigID').value;
+    this.http.get_task_mid_list(BigID).subscribe(
       (res: any[]) => {
         console.log(res);
         let tmp_post_mid: Array<{}> = [];

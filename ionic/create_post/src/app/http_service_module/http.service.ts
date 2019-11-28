@@ -85,16 +85,16 @@ export class HttpService {
 
   create_mid_task(info) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/task/createMID`;
-    this.httpClient.post(URL, info, {headers: this.header})
+    this.httpClient.post(URL, info)//, {headers: this.header})
     .subscribe(
-       tap( async res => {
+       async res => {
         console.log("TASK Create"+ res["create"])
         if(res["cretae"] === "success"){
           this.httpSubject.next(true);
         }else{
           this.httpSubject.next(false);
         }
-      }),
+      },
       async error =>{
         console.log(error.status);
         console.log(error.error);
@@ -107,16 +107,16 @@ export class HttpService {
 
   create_sml_task(info) : Promise<{}> {
     let URL = `${this.SERVER_ADDRESS}/task/createSML`;
-    this.httpClient.post(URL, info, {headers: this.header})
+    this.httpClient.post(URL, info)//, {headers: this.header})
     .subscribe(
-       tap( async res => {
+       async res => {
         console.log("TASK Create"+ res["create"])
         if(res["cretae"] === "success"){
           this.httpSubject.next(true);
         }else{
           this.httpSubject.next(false);
         }
-      }),
+      },
       async error =>{
         console.log(error.status);
         console.log(error.error);

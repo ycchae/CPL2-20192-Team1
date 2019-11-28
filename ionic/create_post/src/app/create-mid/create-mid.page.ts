@@ -19,8 +19,6 @@ export class CreateMidPage implements OnInit{
 
   author: string;
   projectID: string;
-  BigID: string;
-  MidID: string;
 
   formData: FormData;
   constructor(
@@ -31,7 +29,7 @@ export class CreateMidPage implements OnInit{
     private dataService: DataService,
     private formBuilder: FormBuilder
   ) {
-    
+    this.formData = new FormData();
   }
 
   async ngOnInit() {
@@ -93,7 +91,7 @@ export class CreateMidPage implements OnInit{
     });
 
     this.formData.append('ProjectID', this.projectID);
-    this.formData.append('BigID', this.BigID);
+    this.formData.append('BigID', this.uploadForm.get('BigID').value);
     this.formData.append('MidLevel', this.uploadForm.get('MidLevel').value);
     this.formData.append('MidTitle', this.uploadForm.get('MidTitle').value);
     this.formData.append('MidStart', start);

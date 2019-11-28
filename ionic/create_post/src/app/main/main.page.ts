@@ -55,6 +55,7 @@ export class MainPage implements OnInit {
 
   project_click(project){
     this.dataService.setProjectID(project.id);
+    console.log(project.id);
     this.dataService.setManagerID(project.mgr_id);
     this.dataService.setProjectName(project.name);
     this.dataService.setAttendLink(project.proj_url);

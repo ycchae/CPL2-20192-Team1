@@ -75,6 +75,12 @@ export class TaskListPage implements OnInit {
           tmp.push({
             id: val["BIG_ID"],
             title: val["BIG_TITLE"],
+            start: val["BIG_START"],
+            end: val["BIG_END"],
+            author: val["BIG_AUTHOR"],
+            created: val["BIG_CREATED"],
+            desc: val["BIG_DESC"],
+            attach: val["BIG_ATTACHMENT"],
             mids: []
           });
         });
@@ -92,6 +98,12 @@ export class TaskListPage implements OnInit {
             tmp.push({
               id: val["MID_ID"],
               title: val["MID_TITLE"],
+              start: val["MID_START"],
+              end: val["MID_END"],
+              author: val["MID_AUTHOR"],
+              created: val["MID_CREATED"],
+              desc: val["MID_DESC"],
+              attach: val["MID_ATTACHMENT"],
               smls: []
             });
           });
@@ -111,6 +123,12 @@ export class TaskListPage implements OnInit {
               tmp.push({
                 id: val["SML_ID"],
                 title: val["SML_TITLE"],
+                start: val["SML_START"],
+                end: val["SML_END"],
+                author: val["SML_AUTHOR"],
+                created: val["SML_CREATED"],
+                desc: val["SML_DESC"],
+                attach: val["SML_ATTACHMENT"],
                 smls: []
               });
             });
@@ -132,8 +150,43 @@ export class TaskListPage implements OnInit {
     console.log(argu);
     return argu ? false : true;
   }
-  go_board(arg) {
-    console.log(arg);
+  go_board(type: string, ...args: any) {
+    var len = args.length-1;
+    let title  = args[len]['title'];
+    let start  = args[len].start;
+    let end  = args[len].end;
+    let author  = args[len].author;
+    let created  = args[len].created;
+    let desc  = args[len].desc;
+    let attach = args[len].attach.split("*");
+    let attaches = new Array();
+    let pre_path = `http://54.180.89.180:9000/download?path=public/${this.project_id}/`;
+    for(var i=0; i<args.length; ++i){
+      pre_path += args[i]["id"]+"/";
+    }
+    for(var i=0; i<attach.length-1; ++i){
+      var path = pre_path+attach[i];
+      attaches.push({name: attach[i], path: path});
+    }
+    
+    this.dataService.setType(type);
+    this.dataService.setTitle(title);
+    this.dataService.setStart(start);
+    this.dataService.setEnd(end);
+    this.dataService.setAuthor(author);
+    this.dataService.setCreated(created);
+    this.dataService.setDesc(desc);
+    this.dataService.setAttaches(attaches);
+    
+    console.log(type)
+    console.log(title)
+    console.log(start)
+    console.log(author)
+    console.log(created)
+    console.log(desc)
+    console.log(attaches)
+
+    this.navCtrl.navigateForward('/board');
   }
 
   go_create_big(){

@@ -37,4 +37,68 @@ export class DataService {
   getProjectName(){
     return this.project_name;
   }
+  private type   : string;
+  private title  : string;
+  private start  : string;
+  private end    : string;
+  private author : string;
+  private created: string;
+  private desc   : string;
+  private attaches : any[];
+
+  setType(type: string){
+    this.type = type;
+  }
+  getType(): string{
+    return this.type;
+  }
+
+  setTitle(title: string){
+    this.title = title;
+  }
+  getTitle(): string{
+    return this.title;
+  }
+
+  setStart(start: string){
+    this.start = start;
+  }
+  getStart(): string{
+    return this.start;
+  }
+
+  setEnd(end: string){
+    this.end = end;
+  }
+  getEnd(): string{
+    return this.end;
+  }
+
+  setAuthor(author: string){
+    this.author = author;
+  }
+  getAuthor(): string{
+    return this.author;
+  }
+
+  setCreated(created: string){
+    this.created = created;
+  }
+  getCreated(): string{
+    return this.created;
+  }
+
+  setDesc(desc: string){
+    this.desc = desc;
+  }
+  getDesc(): string{
+    return this.desc
+  }
+
+  setAttaches(attaches: any[]){
+    this.attaches = attaches;
+  }
+  getAttaches(): any[]{
+    return this.attaches;
+  }
 }

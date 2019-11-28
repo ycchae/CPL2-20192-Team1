@@ -32,7 +32,7 @@
           <ion-label class="ion-text-wrap">공지사항</ion-label>
         </ion-item>
         <ion-list class="noti-list" *ngIf="notiIsOpen"> <!-- NOTI -->
-          <ion-item class="noti-title" *ngFor="let noti of notis" (click)="go_board(noti)">
+          <ion-item class="noti-title" *ngFor="let noti of notis" (click)="go_board('noti', noti)">
 
             <ion-label class="ion-text-wrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ noti.title }}</ion-label>
           </ion-item>
@@ -47,7 +47,7 @@
             <ion-item class="big-title">
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
               <ion-icon [name]="bigIsOpen[big.id] ? 'arrow-dropdown' : 'arrow-dropright'"  (click)="bigIsOpen[big.id] = toggle(bigIsOpen[big.id])" style="padding-right:5px"></ion-icon>
-              <ion-label class="ion-text-wrap" (click)="go_board(big)">{{ big.title }}</ion-label>
+              <ion-label class="ion-text-wrap" (click)="go_board('big', big)">{{ big.title }}</ion-label>
             </ion-item>
 
             <ng-container *ngIf="bigIsOpen[big.id]">
@@ -55,10 +55,10 @@
                 <ion-item class="mid-title">
                   <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
                   <ion-icon [name]="midIsOpen[mid.id] ? 'arrow-dropdown' : 'arrow-dropright'" (click)="midIsOpen[mid.id]= toggle(midIsOpen[mid.id])" style="padding-right:5px"></ion-icon>
-                  <ion-label class="ion-text-wrap" (click)="go_board(mid)">{{ mid.title }}</ion-label>
+                  <ion-label class="ion-text-wrap" (click)="go_board('mid', big, mid)">{{ mid.title }}</ion-label>
                 </ion-item>
                 <ng-container *ngIf="midIsOpen[mid.id]">
-                  <ion-item class="sml-title" *ngFor="let sml of mid['smls']" (click)="go_board(sml)"> <!-- SML -->
+                  <ion-item class="sml-title" *ngFor="let sml of mid['smls']" (click)="go_board('sml', big, mid, sml)"> <!-- SML -->
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
                     <ion-label class="ion-text-wrap">{{ sml.title }}</ion-label>
                   </ion-item> <!-- SML -->
