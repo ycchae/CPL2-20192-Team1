@@ -10,7 +10,8 @@ var cors = require('cors') // 다른 서버로 접근하기위해서 사용
 var mysql = require('mysql');
 var crypto = require('crypto'); //비밀번호 암호화
 var mysqlDB = require('./mysql-db');
-
+let {PythonShell} = require('python-shell')
+//var PythonShell = require('python-shell'); 
 mysqlDB.connect();
 
 var app = express();
@@ -37,6 +38,9 @@ var upload = multer({
         filesize: 1024 * 1024 * 50
     }
 });
+
+
+
 
 var router = express.Router();
 app.use('/', router);
@@ -163,17 +167,71 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
-            for (var i = 0; i < files.length; ++i)
+            for (var i = 0; i < files.length; ++i){
                 fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
-
+                var extension = path.extname(files[i].originalname);
+                console.log(extension);
+                if(extension == '.pdf' || extension == '.pptx' ||extension == '.docx')
+                var options = {
+                    mode: 'text', 
+                    pythonPath: '/usr/bin/python',//doesn't matter
+                    pythonOptions: ['-u'],
+                    scriptPath: '', //doesn't matter
+                    args: [dir + "/" + files[i].originalname] // SET THIS !!!!!  sample.docx  
+                };
             
+                PythonShell.run('./public/extract_word/extract_text_from_file.py', options, function (err, extract_results) {
+                    if (err) throw err;
+                    else{
+                        console.log('results: %j', extract_results);
+                //         for(var j = 0; j< extract_results.length ; j++){
+                //             mysqlDB.query('select * from SEARCH where PROJ_ID=? and WORD = ?', [projectID, extract_results[j]], function (err, select_results) {
+                //                 var word;
+                //                 if (err) {
+                //                     word = { "word": "error" };
+                //                     console.log("word select ERROR");
+                //                     console.log(err);
+                //                     console.log(JSON.stringify(word));
+                //                 }
+                //                 else if (select_results.length > 0) {
+                //                     console.log(select_results);
+                //                     origin_file_path = select_results[i]['FILE_PATHS'];
+                //                     origin_file_path += "*" + dir + "/" + files[i].originalname;
+                //                     mysqlDB.query('UPDATE SEARCH set FILE_PATH = ? where PROJ_ID = ? and WORD = ?', [origin_file_path, projectID, extract_results[j]] , function(err,rows,field){
+                //                         if(err){
+                //                             console.log("SEARCH UPDATE 실패");
+                //                         }else{
+                //                             console.log("SEARCH UPDATE  성공")
+                //                         }
+                //                     });         
+                //                 }
+                //                 else {
+                //                     var search_data = {
+                //                         PROJ_ID: projectID, WORD: extract_results[j], FILE_PATHS: origin_file_path
+                //                     }
+                //                     mysqlDB.query('INSERT INTO SEARCH set ?', search_data , function(err,results){
+                //                         if(err){
+                //                             console.log("SEARCH insert 실패");
+                //                         }else{
+                //                             console.log("SEARCH insert 성공")
+                //                         }
+                //                     });   
+                //                 }
+                //             })
+                //         }
+                    }
+                });
+            }
             var result_attach = BigAttach.split('*');
+            console.log("result _attach" + result_attach);
             var attaches='';
             for(var i = 0; i<result_attach.length-1; i++){
                 attaches += dir +'/' + result_attach[i] +'*';
+                console.log("attaches " +i +" :"+ attaches);
             }
-            mysqlDB.query('UPDATE set BIG_ATTACHMENT = ? from POST_BIG where BIG_ID = ?', [attaches, result_id] , function(err,rows,field){
+            mysqlDB.query('UPDATE POST_BIG set BIG_ATTACHMENT = ? where BIG_ID = ?', [attaches, result_id] , function(err,rows,field){
                 if(err){
+                    console.log(err);
                     console.log("post update 실패");
                     admit = { "create": "deny" };
                 }else{
@@ -562,67 +620,19 @@ router.route("/update-status/project").get(function(req,res){ //프로젝트 상
         }
     })
 });
-router.route("/update-status/noti").get(function(req,res){ // 상태 변경
-    var id = req.query.id;
-    var status = req.query.status;
-    mysqlDB.query('update POST_NOTI set NOTI_STATUS = ? where NOTI_ID=?',[status,id],function(err,rows,fields){
-        var result;
+router.route("/update-progress/project").get(function(req,res){ //프로젝트 상태 변경
+    var projectID = req.query.proj_id;
+    var projectProgress = req.query.proj_progress;
+    mysqlDB.query('update PROJECT set PROJ_PROGRESS = ? where PROJ_ID=?',[projectProgress,projectID],function(err,rows,fields){
+        var project;
         if(err){
             console.log("에러 발생");
-            result = {"check":"no"}
-            res.send(JSON.stringify(result))
+            project = {"check":"no"}
+            res.send(JSON.stringify(project))
         }else{
             console.log("상태변경 성공");
-            result = {"check":"yes"}
-            res.send(JSON.stringify(result))
-        }
-    })
-});
-router.route("/update-status/big").get(function(req,res){ // 상태 변경
-    var id = req.query.id;
-    var status = req.query.status;
-    mysqlDB.query('update POST_BIG set BIG_STATUS = ? where BIG_ID=?',[status,id],function(err,rows,fields){
-        var result;
-        if(err){
-            console.log("에러 발생");
-            result = {"check":"no"}
-            res.send(JSON.stringify(result))
-        }else{
-            console.log("상태변경 성공");
-            result = {"check":"yes"}
-            res.send(JSON.stringify(result))
-        }
-    })
-});
-router.route("/update-status/mid").get(function(req,res){ // 상태 변경
-    var id = req.query.id;
-    var status = req.query.status;
-    mysqlDB.query('update POST_MID set MID_STATUS = ? where MID_ID=?',[status,id],function(err,rows,fields){
-        var result;
-        if(err){
-            console.log("에러 발생");
-            result = {"check":"no"}
-            res.send(JSON.stringify(result))
-        }else{
-            console.log("상태변경 성공");
-            result = {"check":"yes"}
-            res.send(JSON.stringify(result))
-        }
-    })
-});
-router.route("/update-status/sml").get(function(req,res){ //프로젝트 상태 변경
-    var id = req.query.id;
-    var status = req.query.status;
-    mysqlDB.query('update POST_SML set SML_STATUS = ? where SML_ID=?',[status,id],function(err,rows,fields){
-        var result;
-        if(err){
-            console.log("에러 발생");
-            result = {"check":"no"}
-            res.send(JSON.stringify(result))
-        }else{
-            console.log("상태변경 성공");
-            result = {"check":"yes"}
-            res.send(JSON.stringify(result))
+            project = {"check":"yes"}
+            res.send(JSON.stringify(project))
         }
     })
 });
@@ -992,3 +1002,23 @@ router.route("/one-postnoti/select").get(function (req, res) {
         }
     })
 })
+
+
+//postnoti one select
+router.route("/extract/word").get(function (req, res) {
+    var options = {
+        mode: 'text', 
+        pythonPath: '/usr/bin/python',//doesn't matter
+        pythonOptions: ['-u'],
+        scriptPath: '', //doesn't matter
+        args: ['./public/extract_word/sample.docx'] // SET THIS !!!!!  sample.docx  
+    };
+
+    PythonShell.run('./public/extract_word/extract_text_from_file.py', options, function (err, results) {
+
+        if (err) throw err;
+      
+        console.log('results: %j', results);
+      
+    });
+});
