@@ -157,17 +157,34 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
 
             console.log("Create task success");
 
-           
-            var dir = "./public/" + projectID + "/" + results["insertId"];
+            var result_id = results["insertId"];
+            var dir = "./public/" + projectID + "/" +result_id;
+
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
             for (var i = 0; i < files.length; ++i)
                 fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
 
-            admit = { "create": "success" };
-            res.write(JSON.stringify(admit));
-            res.end();
+            
+            var result_attach = BigAttach.split('*');
+            var attaches='';
+            for(var i = 0; i<result_attach.length-1; i++){
+                attaches += dir +'/' + result_attach[i] +'*';
+            }
+            mysqlDB.query('UPDATE set BIG_ATTACHMENT = ? from POST_BIG where BIG_ID = ?', [attaches, result_id] , function(err,rows,field){
+                if(err){
+                    console.log("post update 실패");
+                    admit = { "create": "deny" };
+                }else{
+                    console.log("post update 성공")
+                    admit = { "create": "success" };
+                   
+                }
+                res.write(JSON.stringify(admit));
+                res.end();
+            });         
+  
         } else {
             console.log(err);
             console.log("TASK INSERT ERROR");
@@ -208,18 +225,35 @@ router.route("/task/createMID").post(upload.array('userFiles', 12), function (re
     mysqlDB.query('INSERT INTO POST_MID set ?', data, function (err, results) {
         var admit;
         if (!err) {
-            
+            var result_id = results["insertId"];
             var dir = `./public/${projectID}/${BigID}/${results["insertId"]}`;
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
             for (var i = 0; i < files.length; ++i)
                 fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
+            
 
-            admit = { "create": "success" };
-            console.log("Create task success");
-            res.write(JSON.stringify(admit));
-            res.end();
+            var result_attach = MidAttach.split('*');
+            var attaches='';
+            for(var i = 0; i<result_attach.length-1; i++){
+                attaches += dir +'/' + result_attach[i] +'*';
+            }
+            mysqlDB.query('UPDATE set MID_ATTACHMENT = ? from POST_MID where MID_ID = ?', [attaches, result_id] , function(err,rows,field){
+                if(err){
+                    console.log("post update 실패");
+                    admit = { "create": "deny" };
+                }else{
+                    console.log("post update 성공")
+                    admit = { "create": "success" };
+                    
+                }
+                res.write(JSON.stringify(admit));
+                res.end();
+            });   
+
+
+         
         } else {
             console.log("TASK INSERT ERROR");
             admit = { "create": "deny" };
@@ -258,6 +292,7 @@ router.route("/task/createSML").post(upload.array('userFiles', 12), function (re
     mysqlDB.query('INSERT INTO POST_SML set ?', data, function (err, results) {
         var admit;
         if (!err) {
+            var result_id = results["insertId"];
             var dir = `./public/${projectID}/${BigID}/${MidID}/${results["insertId"]}`;
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
@@ -265,10 +300,23 @@ router.route("/task/createSML").post(upload.array('userFiles', 12), function (re
             for (var i = 0; i < files.length; ++i)
                 fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
 
-            admit = { "create": "success" };
-            console.log("Create task success");
-            res.write(JSON.stringify(admit));
-            res.end();
+
+            var result_attach = SmlAttach.split('*');
+            var attaches='';
+            for(var i = 0; i<result_attach.length-1; i++){
+                attaches += dir +'/' + result_attach[i] +'*';
+            }
+            mysqlDB.query('UPDATE set SML_ATTACHMENT = ? from POST_SML where SML_ID = ?', [attaches, result_id] , function(err,rows,field){
+                if(err){
+                    console.log("post update 실패");
+                    admit = { "create": "deny" };
+                }else{
+                    console.log("post update 성공")
+                    admit = { "create": "success" };
+                }
+                res.write(JSON.stringify(admit));
+                res.end();
+            });   
         } else {
             console.log("TASK INSERT ERROR");
             admit = { "create": "deny" };
