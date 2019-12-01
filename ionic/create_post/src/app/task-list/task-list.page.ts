@@ -84,6 +84,7 @@ export class TaskListPage implements OnInit {
             desc: val["BIG_DESC"],
             attach: val["BIG_ATTACHMENT"],
             status: val["BIG_STATUS"],
+            weight: val["BIG_WEIGHT"],
             mids: []
           });
 
@@ -171,8 +172,9 @@ export class TaskListPage implements OnInit {
         }
         sml_progress += sml_complete/this.tasks[big]['mids'][mid]['smls'].length;
       }
-      progress = this.tasks[big].
+      progress += this.tasks[big]['weight'] * (sml_progress/this.tasks[big]['mids'].length);
     }
+    this.http.update_project_progress(this.project_id, progress.toString());
     
 
     this.notiIsOpen = false;
@@ -194,7 +196,7 @@ export class TaskListPage implements OnInit {
     let desc  = args[len].desc;
     let attach = args[len].attach.split("*");
     let attaches = new Array();
-    let pre_path = `http://13.124.150.35:9000/download?path=public/${this.project_id}/`;
+    let pre_path = `http://155.230.90.22:9000/download?path=/${this.project_id}/`;
     
     for(var i=0; i<attach.length-1; ++i){
       var path = pre_path+attach[i];

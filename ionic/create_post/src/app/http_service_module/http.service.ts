@@ -13,7 +13,7 @@ export class HttpService {
     private httpClient : HttpClient
   ) { }
 
-  SERVER_ADDRESS: string = "http://13.124.150.35:9000";
+  SERVER_ADDRESS: string = "http://155.230.90.22:9000";
   header = new HttpHeaders(
     {
       'Content-Type': 'application/json',
@@ -185,6 +185,10 @@ export class HttpService {
 
   update_project_state(proj_id : string, proj_status : string) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/update-status/project?proj_id=${proj_id}&proj_status=${proj_status}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+  update_project_progress(proj_id : string, proj_progress : string) : Promise<{}>{
+    let URL = `${this.SERVER_ADDRESS}/update-progress/project?proj_id=${proj_id}&proj_progress=${proj_progress}`;
     return this.httpClient.get(URL, {headers: this.header}).toPromise();
   }
 
