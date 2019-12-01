@@ -701,3 +701,182 @@ router.route("/select/noti-comment").get(function (req, res) {
         }
     })
 })
+
+router.route("/delete/big-comment").get(function (req, res) {
+    var BigCID = req.query.bigc_id;
+    console.log("=======Big Comment Delete =======\n");
+    console.log("BigCID: " + BigCID);
+
+    mysqlDB.query('delete from COMMENT_BIG where BIGC_ID = ?', [BigCID], function (err, results, fields) {
+        if (err) {
+            admit = {"delete" : "error"};
+            console.log("Delete comment error");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+        else {
+            admit = { "delete": "success" };
+            console.log("Delete comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+router.route("/delete/mid-comment").get(function (req, res) {
+    var MidCID = req.query.midc_id;
+    console.log("=======Mid Comment Delete =======\n");
+    console.log("MidCID: " + MidCID);
+
+    mysqlDB.query('delete from COMMENT_MID where MIDC_ID = ?', [MidCID], function (err, results, fields) {
+        if (err) {
+            admit = {"delete" : "error"};
+            console.log("Delete comment error");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+        else {
+            admit = { "delete": "success" };
+            console.log("Delete comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+router.route("/delete/sml-comment").get(function (req, res) {
+    var SmlCID = req.query.smlc_id;
+    console.log("=======Sml Comment Delete =======\n");
+    console.log("SmlCID: " + SmlCID);
+
+    mysqlDB.query('delete from COMMENT_SML where SMLC_ID = ?', [SmlCID], function (err, results, fields) {
+        if (err) {
+            admit = {"delete" : "error"};
+            console.log("Delete comment error");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+        else {
+            admit = { "delete": "success" };
+            console.log("Delete comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+router.route("/delete/noti-comment").get(function (req, res) {
+    var NotiCID = req.query.notic_id;
+    console.log("=======Noti Comment Delete =======\n");
+    console.log("NotiCID: " + NotiCID);
+
+    mysqlDB.query('delete from COMMENT_NOTI where NOTIC_ID = ?', [NotiCID], function (err, results, fields) {
+        if (err) {
+            admit = {"delete" : "error"};
+            console.log("Delete comment error");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+        else {
+            admit = { "delete": "success" };
+            console.log("Delete comment success");
+            res.write(JSON.stringify(admit));
+            res.end();
+        }
+    })
+})
+
+
+//project one select
+router.route("/one-project/select").get(function (req, res) {
+    var proj_id = req.query.proj_id;
+    console.log("======= Proejct Select =======\n");
+    console.log("proj_id: " + proj_id);
+
+    mysqlDB.query('select * from PROJECT where PROJ_ID = ?)', [proj_id], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+
+//postbig one select
+router.route("/one-postbig/select").get(function (req, res) {
+    var big_id = req.query.big_id;
+    console.log("======= Post Big Select =======\n");
+    console.log("big_id: " + big_id);
+
+    mysqlDB.query('select * from POST_BIG where BIG_ID = ?)', [big_id], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+
+//postmid one select
+router.route("/one-postmid/select").get(function (req, res) {
+    var mid_id = req.query.mid_id;
+    console.log("======= Post Mid Select =======\n");
+    console.log("mid_id: " + mid_id);
+
+    mysqlDB.query('select * from POST_MID where MID_ID = ?)', [mid_id], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+
+//postsml one select
+router.route("/one-postsml/select").get(function (req, res) {
+    var sml_id = req.query.sml_id;
+    console.log("======= Post Sml Select =======\n");
+    console.log("sml_id: " + sml_id);
+
+    mysqlDB.query('select * from POST_SML where SML_ID = ?)', [sml_id], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
+
+//postnoti one select
+router.route("/one-postnoti/select").get(function (req, res) {
+    var noti_id = req.query.noti_id;
+    console.log("======= NOTI Select =======\n");
+    console.log("noti_id: " + noti_id);
+
+    mysqlDB.query('select * from POST_NOTI where NOTI_ID = ?)', [noti_id], function (err, rows, fields) {
+        if (err) {
+            console.log("error입니다")
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})

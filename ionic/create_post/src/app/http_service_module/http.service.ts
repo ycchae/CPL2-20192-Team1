@@ -232,4 +232,49 @@ export class HttpService {
     return this.httpClient.get(URL, {headers: this.header}).toPromise();
   }
 
+  del_comment_big(bigc_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/delete/big-comment?bigc_id=${bigc_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  del_comment_mid(midc_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/delete/mid-comment?midc_id=${midc_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  del_comment_sml(smlc_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/delete/sml-comment?smlc_id=${smlc_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  del_comment_noti(notic_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/delete/noti-comment?notic_id=${notic_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_one_info_project(proj_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/one-project/select?proj_id=${proj_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_one_info_postbig(big_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/one-postbig/select?big_id=${big_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_one_info_postmid(mid_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/one-postmid/select?mid_id=${mid_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_one_info_postsml(sml_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/one-postsml/select?sml_id=${sml_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+  get_one_info_postnoti(noti_id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/one-postnoti/select?noti_id=${noti_id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+  
 }
