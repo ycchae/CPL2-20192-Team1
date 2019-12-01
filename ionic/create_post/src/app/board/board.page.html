@@ -1,30 +1,28 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>{{title}}</ion-title>
-    <ion-label class="ion-text-wrap" position="stacked">작성자</ion-label>
-    <ion-text> {{author}} </ion-text><br>
-    <ion-label class="ion-text-wrap" position="stacked">작성일</ion-label>
-    <ion-text> {{dateConvertorCreate(created)}} </ion-text>
+    <ion-note class="ion-text-wrap" position="stacked">작성자</ion-note>
+    <ion-note> {{author}} </ion-note><br>
+    <ion-note class="ion-text-wrap" position="stacked">작성일</ion-note>
+    <ion-note> {{dateConvertorCreate(created)}} </ion-note>
   </ion-toolbar>
+
   <ion-fab vertical="top" horizontal="end" slot="fixed">
-      <ion-fab-button *ngIf="isPM" color="light">
-        <ion-icon name="settings"></ion-icon>
+    <ion-fab-button *ngIf="isOwner || isPM" color="light">
+      <ion-icon name="settings"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="bottom">
+      <ion-fab-button color="light" (click) = "update_status('1')">
+        <ion-label>완료</ion-label>
       </ion-fab-button>
-      <ion-fab-list side="bottom">
-        <ion-fab-button color="light" (click) = "update_status('1')">
-          <ion-label>완료</ion-label>
-        </ion-fab-button>
-        <ion-fab-button color="light">
-          <ion-label>수정</ion-label>
-        </ion-fab-button>
-        <ion-fab-button color="light" (click) = "update_status('-1')">
-          <ion-label>삭제</ion-label>
-        </ion-fab-button>
-        <ion-fab-button color="light">
-          <ion-icon name="clipboard" (click) = "attend_dialog()"></ion-icon>
-        </ion-fab-button>
-      </ion-fab-list>
-    </ion-fab>
+      <ion-fab-button color="light">
+        <ion-label>수정</ion-label>
+      </ion-fab-button>
+      <ion-fab-button color="light" (click) = "update_status('-1')">
+        <ion-label>삭제</ion-label>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
 </ion-header>
 
 <ion-content fullscreen>
@@ -47,7 +45,7 @@
       <ion-text class="ion-margin-right" slot="start">{{comment_elem.author}}</ion-text>
       <ion-label class="ion-no-margin ion-text-wrap">{{comment_elem.body}}</ion-label>
       <ion-note class="ion-no-margin" slot="end">{{comment_elem.created}}</ion-note>
-      <button *ngIf="comment_elem.owner" (click)="delComment(comment_elem)" class="ion-no-margin" ion-note slot="end">삭제</button>
+      <button *ngIf="comment_elem.owner || isPM" (click)="delComment(comment_elem)" class="ion-no-margin" ion-note slot="end">삭제</button>
     </ion-item>
     <ion-item>
       <ion-input [(ngModel)]="comment" placeholder="내용을 입력하세요"></ion-input>

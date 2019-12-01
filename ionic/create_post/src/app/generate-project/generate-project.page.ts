@@ -47,6 +47,7 @@ export class GenerateProjectPage {
               text: '확인',
               handler:() =>{
                 this.navCtrl.navigateForward('/main');
+                // this.navCtrl.pop();
               }
             }]
           }).then(alert=>{

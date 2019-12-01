@@ -34,6 +34,10 @@ export class TaskListPage implements OnInit {
 
   }
 
+  ionViewWillEnter(){
+    this.ngOnInit();
+  }
+
   async ngOnInit() {
     this.project_id = this.dataService.getProjectID();
     this.project_name = this.dataService.getProjectName();
@@ -65,9 +69,7 @@ export class TaskListPage implements OnInit {
         console.log(error);
       }
     );
-
-
-
+    
     await this.http.get_task_big_listp(this.project_id).then(
       (res: any[]) => {
         let tmp: Array<{}> = [];
@@ -81,8 +83,14 @@ export class TaskListPage implements OnInit {
             created: val["BIG_CREATED"],
             desc: val["BIG_DESC"],
             attach: val["BIG_ATTACHMENT"],
+            status: val["BIG_STATUS"],
             mids: []
           });
+
+          if(tmp[tmp.length-1]['status'] == -1){
+            tmp.pop();
+          }
+
         });
         this.tasks = tmp;
       },
@@ -104,8 +112,12 @@ export class TaskListPage implements OnInit {
               created: val["MID_CREATED"],
               desc: val["MID_DESC"],
               attach: val["MID_ATTACHMENT"],
+              status: val['MID_STAUS'],
               smls: []
             });
+            if(tmp[tmp.length-1]['status'] == -1){
+              tmp.pop();
+            }
           });
           this.tasks[i]["mids"] = tmp;
         },
@@ -129,8 +141,13 @@ export class TaskListPage implements OnInit {
                 created: val["SML_CREATED"],
                 desc: val["SML_DESC"],
                 attach: val["SML_ATTACHMENT"],
+                status: val['SML_STATUS'],
                 smls: []
               });
+
+              if(tmp[tmp.length-1]['status'] == -1){
+                tmp.pop();
+              }
             });
             this.tasks[i]["mids"][j]["smls"] = tmp;
           },
@@ -141,6 +158,22 @@ export class TaskListPage implements OnInit {
         this.midIsOpen.push(new Map<string, boolean>().set(this.tasks[i]["mids"][j]["id"], false));
       }
     }
+
+    var progress = 0;
+    for(var big=0; big<this.tasks.length; ++big){
+      var sml_progress = 0;
+      for(var mid=0; mid<this.tasks[big]['mids'].length; ++mid){
+        var sml_complete = 0;
+        for(var sml=0; sml<this.tasks[big]['mids'][mid]['smls'].length; ++mid){
+          if(this.tasks[big]['mids'][mid]['smls'][sml].status == 1){
+            ++sml_complete;
+          }
+        }
+        sml_progress += sml_complete/this.tasks[big]['mids'][mid]['smls'].length;
+      }
+      progress = this.tasks[big].
+    }
+    
 
     this.notiIsOpen = false;
     this.taskIsOpen = false;
@@ -161,7 +194,7 @@ export class TaskListPage implements OnInit {
     let desc  = args[len].desc;
     let attach = args[len].attach.split("*");
     let attaches = new Array();
-    let pre_path = `http://54.180.89.180:9000/download?path=public/${this.project_id}/`;
+    let pre_path = `http://13.124.150.35:9000/download?path=public/${this.project_id}/`;
     
     for(var i=0; i<attach.length-1; ++i){
       var path = pre_path+attach[i];
@@ -189,7 +222,7 @@ export class TaskListPage implements OnInit {
     this.navCtrl.navigateForward('/board');
   }
 
-  go_create_big(){
+  go_create_big(){ 
     this.navCtrl.navigateForward('/create-big');
   }
   go_create_mid(){
@@ -212,7 +245,7 @@ export class TaskListPage implements OnInit {
     document.body.removeChild(selBox);
   }
   attend_dialog(){
-    let base_url = "54.180.89.180:9010/attend-project/"
+    let base_url = "13.124.150.35:9010/attend-project/"
     base_url += this.dataService.getLink();
     this.clipboard_copy(base_url);
     this.alertCtrl.create({

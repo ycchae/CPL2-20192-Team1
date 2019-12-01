@@ -10,7 +10,7 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./login-page.page.scss'],
 })
 export class LoginPagePage implements OnInit {
-  SERVER_ADDRESS: string = "http://54.180.89.180:9000";
+  SERVER_ADDRESS: string = "http://13.124.150.35:9000";
   private user = {
     email: '',
     password: ''

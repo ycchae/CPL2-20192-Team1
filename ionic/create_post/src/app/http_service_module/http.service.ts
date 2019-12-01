@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from  '@angular/common/http';
 import { tap } from  'rxjs/operators';
 import { Observable, BehaviorSubject } from  'rxjs';
-import { StorageService } from '../storage_service_module/storage.service'
 import { async } from '@angular/core/testing';
 
 @Injectable({
@@ -11,11 +10,10 @@ import { async } from '@angular/core/testing';
 export class HttpService {
 
   constructor(
-    private httpClient : HttpClient,
-    private storage: StorageService
+    private httpClient : HttpClient
   ) { }
 
-  SERVER_ADDRESS: string = "http://54.180.89.180:9000";
+  SERVER_ADDRESS: string = "http://13.124.150.35:9000";
   header = new HttpHeaders(
     {
       'Content-Type': 'application/json',
@@ -47,7 +45,6 @@ export class HttpService {
       tap(async (res) => {
         console.log("loginservice "+ res["login"]);
         if(res["login"] === "success"){
-          this.storage.save_uid(info["email"]);
           this.httpSubject.next(true);
         }else{
           this.httpSubject.next(false);
@@ -187,11 +184,17 @@ export class HttpService {
   }
 
   update_project_state(proj_id : string, proj_status : string) : Promise<{}>{
-    console.log("http");
     let URL = `${this.SERVER_ADDRESS}/update-status/project?proj_id=${proj_id}&proj_status=${proj_status}`;
     return this.httpClient.get(URL, {headers: this.header}).toPromise();
   }
 
+  update_post_state(type: string, id : string, status : string) : Promise<{}>{
+    let URL = `${this.SERVER_ADDRESS}/update-status/${type}?id=${id}&status=${status}`;     
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
+
+
+  
   insert_comment_big(big_id : string, bigco_author: string, bigcomment: string, bigco_time: string, bigco_status : string) : Promise<{}> {
     let URL = `${this.SERVER_ADDRESS}/insert/big-comment?BigID=${big_id}&BigCoAuthor=${bigco_author}&BigComment=${bigcomment}&BigTime=${bigco_time}&BigCoStatus=${bigco_status}`;
     return this.httpClient.get(URL, {headers: this.header}).toPromise();

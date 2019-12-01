@@ -53,6 +53,10 @@ export class MainPage implements OnInit {
     );
   }
 
+  ionViewWillEnter(){
+    this.ngOnInit();
+  }
+
   setProgressStatus(){
     for(var i=0; i<this.projects.length; ++i){
       let start = Date.parse(this.projects[i]['start']);
@@ -77,6 +81,12 @@ export class MainPage implements OnInit {
     }
   }
 
+  logout(){
+    this.storage.del_uid();
+    this.storage.del_pw();
+    this.navCtrl.pop();
+    this.navCtrl.navigateForward("/login");
+  }
   project_click(project){
     this.dataService.setProjectID(project.id);
     console.log(project.id);
@@ -86,7 +96,6 @@ export class MainPage implements OnInit {
     this.navCtrl.navigateForward("/task-list");
   }
   goGenerateProject(){
-    this.navCtrl.pop();
     this.navCtrl.navigateForward("/generate-project");
   }
 

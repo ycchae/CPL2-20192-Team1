@@ -3,8 +3,6 @@ import { NavController, NavParams } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { FormGroup } from '@angular/forms';
 import { StorageService } from '../storage_service_module/storage.service';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-
 
 @Component({
   selector: 'app-login',
@@ -26,27 +24,38 @@ export class LoginPage implements OnInit {
   
 
   async ngOnInit() {
-    let user_id: string;
     await this.storage.get_uid()
     .then(val=>{
-      user_id = val;
+      this.user.email = val;
+    });
+    await this.storage.get_pw()
+    .then(val=>{
+      this.user.password= val;
     });
 
-    if(user_id != null && user_id != "")
-      this.navCtrl.navigateForward('/main');
+    if(this.user.email != null && this.user.email != "")
+      this.login();
   }
 
-  login(form: FormGroup){
-    this.http.login(form.value).subscribe(
+  ionViewWillEnter(){
+    this.ngOnInit();
+  }
+
+  login(){
+    this.http.login(this.user).subscribe(
       res => {
         if(res["login"] === "success"){
           console.log("loginpage success");
-          this.goMainPage() ;
+          this.storage.set_uid(this.user.email);
+          this.storage.set_pw(this.user.password);
+          this.goMainPage();
         }else{
           console.log("loginpage fail");
         }
       },
       error => {
+        this.storage.del_uid();
+        this.storage.del_pw();
         console.log(error.status);
         console.log(error.error);
         console.log(error.headers);

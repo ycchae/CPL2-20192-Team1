@@ -25,7 +25,9 @@ export class BoardPage implements OnInit {
   // comment
   comment: string;
   comments = new Array();
-  
+
+  isOwner: boolean;
+  isPM: boolean;
 
   constructor(
     private http: HttpService,
@@ -42,9 +44,16 @@ export class BoardPage implements OnInit {
     this.created = this.dataservice.getCreated();
     this.attaches = this.dataservice.getAttaches();
     this.id = this.dataservice.getBoardID();
+    
   }
 
   async ngOnInit() {
+    this.user = await this.storage.get_uid();
+    let pm = this.dataservice.getManagerID();
+    
+    this.isOwner = this.user == this.author;
+    this.isPM = this.user == pm;
+
     let res : any;
     switch(this.type){
       case 'noti':
@@ -56,8 +65,7 @@ export class BoardPage implements OnInit {
       case 'sml':
         res = await this.http.get_comment_sml_list(this.id); break;
     }
-    this.user = await this.storage.get_uid();
-    console.log(this.user);
+    
 
     for(var i=0; i<res.length; ++i){
       var created = this.dateConvertorCreate(res[i]['BIGC_TIME']);
@@ -73,8 +81,6 @@ export class BoardPage implements OnInit {
     }
     console.log(this.comments);
   }
-
-  
 
   async insertComment(){
     let id = this.id;
@@ -94,16 +100,42 @@ export class BoardPage implements OnInit {
       case 'sml':
         res = await this.http.insert_comment_sml(id, author, context, created, '0'); break;
     }
+    console.log(res);
 
-    if (res){
-      console.log(res);
-    }else{
-      console.log(res);
+    let tmp = {
+      id: id,
+      author: author,
+      body: context,
+      created: created,
+      owner: true
     }
+    this.comments.push(tmp);
   }
 
   async delComment(comment: any){
-    // 세민아.... 니가 해....
+    let id = comment.id;
+    let res : any;
+    switch(this.type){
+      case 'noti':
+        res = await this.http.del_comment_noti(id); break;
+      case 'big':
+        res = await this.http.del_comment_big(id); break;
+      case 'mid':
+        res = await this.http.del_comment_mid(id); break;
+      case 'sml':
+        res = await this.http.del_comment_sml(id); break;
+    }
+    console.log(res);
+
+    const index = this.comments.indexOf(comment, 0);
+    if (index > -1) {
+      this.comments.splice(index, 1);
+    }
+  }
+
+  async update_status(status: string){
+    let res = await this.http.update_post_state(this.type, this.id, status);
+    console.log(res);
   }
 
   dateConvertor(date: string) : string{

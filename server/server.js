@@ -562,6 +562,70 @@ router.route("/update-status/project").get(function(req,res){ //프로젝트 상
         }
     })
 });
+router.route("/update-status/noti").get(function(req,res){ // 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_NOTI set NOTI_STATUS = ? where NOTI_ID=?',[status,id],function(err,rows,fields){
+        var result;
+        if(err){
+            console.log("에러 발생");
+            result = {"check":"no"}
+            res.send(JSON.stringify(result))
+        }else{
+            console.log("상태변경 성공");
+            result = {"check":"yes"}
+            res.send(JSON.stringify(result))
+        }
+    })
+});
+router.route("/update-status/big").get(function(req,res){ // 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_BIG set BIG_STATUS = ? where BIG_ID=?',[status,id],function(err,rows,fields){
+        var result;
+        if(err){
+            console.log("에러 발생");
+            result = {"check":"no"}
+            res.send(JSON.stringify(result))
+        }else{
+            console.log("상태변경 성공");
+            result = {"check":"yes"}
+            res.send(JSON.stringify(result))
+        }
+    })
+});
+router.route("/update-status/mid").get(function(req,res){ // 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_MID set MID_STATUS = ? where MID_ID=?',[status,id],function(err,rows,fields){
+        var result;
+        if(err){
+            console.log("에러 발생");
+            result = {"check":"no"}
+            res.send(JSON.stringify(result))
+        }else{
+            console.log("상태변경 성공");
+            result = {"check":"yes"}
+            res.send(JSON.stringify(result))
+        }
+    })
+});
+router.route("/update-status/sml").get(function(req,res){ //프로젝트 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_SML set SML_STATUS = ? where SML_ID=?',[status,id],function(err,rows,fields){
+        var result;
+        if(err){
+            console.log("에러 발생");
+            result = {"check":"no"}
+            res.send(JSON.stringify(result))
+        }else{
+            console.log("상태변경 성공");
+            result = {"check":"yes"}
+            res.send(JSON.stringify(result))
+        }
+    })
+});
 
 router.route('/download').get(function(req, res){
   const file = req.query.path;

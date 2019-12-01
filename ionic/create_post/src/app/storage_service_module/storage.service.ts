@@ -7,7 +7,7 @@ import { Storage } from  '@ionic/storage';
 export class StorageService {
   constructor(private storage: Storage) {  }
 
-  save_uid(email : string){
+  set_uid(email : string){
     this.storage.set("USER_ID", email);
   }
   del_uid(){
@@ -15,5 +15,14 @@ export class StorageService {
   }
   get_uid() {
     return this.storage.get("USER_ID");
+  }
+  set_pw(pw : string){
+    this.storage.set("USER_PW", pw);
+  }
+  del_pw(){
+    this.storage.remove("USER_PW");
+  }
+  get_pw() {
+    return this.storage.get("USER_PW");
   }
 }
