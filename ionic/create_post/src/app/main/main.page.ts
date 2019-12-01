@@ -86,6 +86,7 @@ export class MainPage implements OnInit {
     this.navCtrl.navigateForward("/task-list");
   }
   goGenerateProject(){
+    this.navCtrl.pop();
     this.navCtrl.navigateForward("/generate-project");
   }
 

@@ -162,9 +162,7 @@ export class TaskListPage implements OnInit {
     let attach = args[len].attach.split("*");
     let attaches = new Array();
     let pre_path = `http://54.180.89.180:9000/download?path=public/${this.project_id}/`;
-    for(var i=0; i<args.length; ++i){
-      pre_path += args[i]["id"]+"/";
-    }
+    
     for(var i=0; i<attach.length-1; ++i){
       var path = pre_path+attach[i];
       attaches.push({name: attach[i], path: path});
