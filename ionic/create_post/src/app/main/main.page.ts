@@ -17,7 +17,6 @@ export class MainPage implements OnInit {
     private storage : StorageService,
     private navCtrl : NavController,
     private dataService: DataService,
-    
   ) {  }
   
   async ngOnInit() {
@@ -29,10 +28,8 @@ export class MainPage implements OnInit {
 
     this.httpService.get_project_list(user_id).subscribe(
       (res: any[])  => {
-        console.log(res);
         let tmp_projects: Array<{}> = [];
         res.forEach(function (value){
-          console.log(value);
           let start = value["PROJ_START"];
           let end = value["PROJ_END"];
           start = start.substr(0,10) + " " +start.split('T')[1].substr(0,5);
@@ -45,12 +42,39 @@ export class MainPage implements OnInit {
             end: end,
             desc: value["PROJ_DESC"],
             mgr_id: value["PROJ_MGR_UID"],
-            proj_url: value["PROJ_URL"]
+            proj_url: value["PROJ_URL"],
+            progress_status: ''
           });
         });
         this.projects = tmp_projects;
+
+        this.setProgressStatus();
       }
     );
+  }
+
+  setProgressStatus(){
+    for(var i=0; i<this.projects.length; ++i){
+      let start = Date.parse(this.projects[i]['start']);
+      let end = Date.parse(this.projects[i]['end']);
+      let progress = this.projects[i]['progress'];
+      let now = new Date().getTime();
+      let dateRate = ((now-start) / (end-start)) *100;
+      console.log(dateRate-progress);
+      if(dateRate >= 100){
+        this.projects[i]['progress_status'] = 'l1';    // dark red
+      }else if(dateRate-progress >= 60) {
+        this.projects[i]['progress_status'] = 'l2';     // red
+      }else if(dateRate-progress >= 40) {
+        this.projects[i]['progress_status'] = 'l3';   // dark yellow
+      }else if(dateRate-progress >= 20) {
+        this.projects[i]['progress_status'] = 'l4';   // yellow
+      }else if(dateRate-progress >= -10){
+        this.projects[i]['progress_status'] = 'l5';     // white
+      }else {
+        this.projects[i]['progress_status'] = 'l6';     // green
+      }
+    }
   }
 
   project_click(project){
