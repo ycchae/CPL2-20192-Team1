@@ -61,9 +61,7 @@ export class CreateMidPage implements OnInit{
         });
         this.post_bigs = tmp_post_big;
       }
-    );
-  
-    
+    );  
   }
     
   setFiles($event) {

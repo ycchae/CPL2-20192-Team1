@@ -361,23 +361,7 @@ router.route("/project/select").get(function (req, res) {
         }
     })
 })
-//project list select
-router.route("/one-project/select").get(function (req, res) {
-    var proj_id = req.query.proj_id;
-    console.log("======= Proejct Select =======\n");
-    console.log("proj_id: " + proj_id);
 
-    mysqlDB.query('select * from PROJECT where PROJ_ID = ?)', [proj_id], function (err, rows, fields) {
-        if (err) {
-            console.log("error입니다")
-        }
-        else {
-            console.log(rows);
-            res.write(JSON.stringify(rows));
-            res.end();
-        }
-    })
-})
 
 
 

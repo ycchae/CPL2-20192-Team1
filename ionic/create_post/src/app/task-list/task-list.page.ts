@@ -153,6 +153,7 @@ export class TaskListPage implements OnInit {
   go_board(type: string, ...args: any) {
     var len = args.length-1;
     let title  = args[len]['title'];
+    let id = args[len].id;
     let start  = args[len].start;
     let end  = args[len].end;
     let author  = args[len].author;
@@ -170,6 +171,7 @@ export class TaskListPage implements OnInit {
     }
     
     this.dataService.setType(type);
+    this.dataService.setBoardID(id);
     this.dataService.setTitle(title);
     this.dataService.setStart(start);
     this.dataService.setEnd(end);

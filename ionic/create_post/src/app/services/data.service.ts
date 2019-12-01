@@ -38,6 +38,7 @@ export class DataService {
     return this.project_name;
   }
   private type   : string;
+  private board_id: string;
   private title  : string;
   private start  : string;
   private end    : string;
@@ -45,7 +46,7 @@ export class DataService {
   private created: string;
   private desc   : string;
   private attaches : any[];
-
+  
   setType(type: string){
     this.type = type;
   }
@@ -100,5 +101,12 @@ export class DataService {
   }
   getAttaches(): any[]{
     return this.attaches;
+  }
+
+  setBoardID(id : string){
+    this.board_id = id;
+  } 
+  getBoardID(): string{
+    return this.board_id;
   }
 }
