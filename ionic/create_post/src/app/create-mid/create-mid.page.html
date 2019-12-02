@@ -16,7 +16,7 @@
         <ion-select formControlName="BigID" [interfaceOptions]="customAlertPostBig" interface="alert"
           placeholder="Select One" required>
           <ion-select-option *ngFor="let post_big of post_bigs" [value]=post_big.BigID>
-            {{post_big.level + ' ' + post_big.title}}</ion-select-option>
+            {{post_big.level + '. ' + post_big.title}}</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item>

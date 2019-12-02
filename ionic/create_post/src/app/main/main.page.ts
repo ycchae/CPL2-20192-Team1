@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpService } from '../http_service_module/http.service'
 import { StorageService } from '../storage_service_module/storage.service';
 import { NavController } from '@ionic/angular';
@@ -9,7 +9,7 @@ import { DataService } from '../services/data.service'
   templateUrl: './main.page.html',
   styleUrls: ['./main.page.scss'],
 })
-export class MainPage implements OnInit {
+export class MainPage  {
   projects: Array<{}> = [];
 
   constructor(
@@ -19,7 +19,7 @@ export class MainPage implements OnInit {
     private dataService: DataService,
   ) {  }
   
-  async ngOnInit() {
+  async initalize() {
     let user_id : string;
     await this.storage.get_uid()
     .then(val => {
@@ -54,7 +54,7 @@ export class MainPage implements OnInit {
   }
 
   ionViewWillEnter(){
-    this.ngOnInit();
+    this.initalize();
   }
 
   setProgressStatus(){

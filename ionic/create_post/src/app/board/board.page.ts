@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../http_service_module/http.service';
 import { StorageService } from '../storage_service_module/storage.service'
 import { DataService } from '../services/data.service'
+import { AlertController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-board',
@@ -32,7 +34,9 @@ export class BoardPage implements OnInit {
   constructor(
     private http: HttpService,
     private dataservice: DataService,
-    private storage: StorageService
+    private storage: StorageService,
+    private alertCtrl: AlertController,
+    private navCtrl: NavController
   )
   { 
     this.type = this.dataservice.getType();
@@ -125,8 +129,7 @@ export class BoardPage implements OnInit {
       case 'sml':
         res = await this.http.del_comment_sml(id); break;
     }
-    console.log(res);
-
+   
     const index = this.comments.indexOf(comment, 0);
     if (index > -1) {
       this.comments.splice(index, 1);
@@ -134,8 +137,43 @@ export class BoardPage implements OnInit {
   }
 
   async update_status(status: string){
+    let header :string;
+    if(status == '1'){
+      header = this.title +" 완료";
+    }else if(status == '-1'){
+      header = this.title +" 삭제";
+    }
+
     let res = await this.http.update_post_state(this.type, this.id, status);
-    console.log(res);
+    if(res['check'] == 'yes'){
+      this.alertCtrl.create({
+        header: header,
+        subHeader: '성공!',
+        buttons: [{
+          text: '확인',
+          handler:() => {
+            this.navCtrl.navigateForward('/task-list');
+          }
+        }]
+      }).then(alert=>{
+        alert.present();
+      })
+    }else{
+      this.alertCtrl.create({
+        header: header,
+        subHeader: '실패 했습니다.',
+        message: '잠시 후 다시 시도해주세요.',
+        buttons: [{
+          text: '확인',
+          handler:() => {
+
+          }
+        }]
+      }).then(alert=>{
+        alert.present();
+      })
+    }
+
   }
 
   dateConvertor(date: string) : string{

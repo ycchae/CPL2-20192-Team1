@@ -14,13 +14,13 @@
         <ion-item>
           <ion-label>대분류</ion-label>
           <ion-select formControlName="BigID" [interfaceOptions]="customAlertPostBig" interface="alert" placeholder="Select One" (ionChange) = "getMidList()" required>
-            <ion-select-option *ngFor="let post_big of post_bigs" [value]=post_big.BigID>{{post_big.level + ' ' + post_big.title}}</ion-select-option>
+            <ion-select-option *ngFor="let post_big of post_bigs" [value]=post_big.BigID>{{post_big.level + '. ' + post_big.title}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
           <ion-label>중분류</ion-label>
           <ion-select formControlName="MidID" [interfaceOptions]="customAlertPostMiddle" interface="alert" placeholder="Select One" required>
-            <ion-select-option *ngFor="let post_middle of post_mids" [value]=post_middle.MidID>{{post_middle.level + ' ' + post_middle.title}}</ion-select-option>
+            <ion-select-option *ngFor="let post_middle of post_mids" [value]=post_middle.MidID>{{post_middle.level + '. ' + post_middle.title}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>

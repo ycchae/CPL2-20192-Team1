@@ -56,8 +56,11 @@ export class CreateMidPage implements OnInit{
           tmp_post_big.push({
             BigID: value["BIG_ID"],
             level: value["BIG_LEVEL"],
-            title: value["BIG_TITLE"]
+            title: value["BIG_TITLE"],
+            status: value["BIG_STATUS"]
           });
+          if(tmp_post_big[tmp_post_big.length-1]['status'] == '1')
+            tmp_post_big.pop();
         });
         this.post_bigs = tmp_post_big;
       }

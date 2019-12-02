@@ -30,8 +30,13 @@ export class GenerateProjectPage {
      end_date:'',
      desc:''
    }
+   sdate: string;
+   edate: string;
 
    generate_project(){
+    this.sdate = this.project.start_date;
+    this.edate = this.project.end_date;
+
     this.project.mgr_id = this.project.user_id;
     this.project.start_date = this.project.start_date.substr(0,10) + " " +this.project.start_date.split('T')[1].substr(0,8);
     this.project.end_date = this.project.end_date.substr(0,10) + " " +this.project.end_date.split('T')[1].substr(0,8);
@@ -46,8 +51,8 @@ export class GenerateProjectPage {
             buttons: [{
               text: '확인',
               handler:() =>{
+                this.navCtrl.pop();
                 this.navCtrl.navigateForward('/main');
-                // this.navCtrl.pop();
               }
             }]
           }).then(alert=>{
@@ -55,13 +60,16 @@ export class GenerateProjectPage {
           });
 
         }else{
-          console.log("loginpage fail");
           this.alertController.create({
             header: 'Reject!',
-            subHeader: ',프로젝트 추가 실패',
-            message: '잠시후 다시 시도해주세요.',
+            subHeader: '프로젝트 추가 실패',
+            message: '입력 값을 확인해주세요.',
             buttons: [{
-              text: '확인'
+              text: '확인',
+              handler:()=>{
+                this.project.start_date = this.sdate;
+                this.project.end_date = this.edate;
+              }
             }]
           }).then(alert=>{
             alert.present();

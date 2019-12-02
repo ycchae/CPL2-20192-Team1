@@ -60,24 +60,24 @@ export class HttpService {
   
   create_big_task(info) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/task/createBIG`;
-    this.httpClient.post(URL, info)//, {headers: this.header})
-    .subscribe(
-       async res => {
-        console.log("TASK Create"+ res["create"])
-        if(res["cretae"] === "success"){
-          this.httpSubject.next(true);
-        }else{
-          this.httpSubject.next(false);
-        }
-      },
-      async error =>{
-        console.log(error.status);
-        console.log(error.error);
-        console.log(error.headers);
-        this.httpSubject.next(false);
-      }
-    );
-    return this.httpSubject.toPromise();
+    return this.httpClient.post(URL, info).toPromise();
+    // .subscribe(
+    //    async res => {
+    //     console.log("TASK Create"+ res["create"])
+    //     if(res["cretae"] === "success"){
+    //       this.httpSubject.next(true);
+    //     }else{
+    //       this.httpSubject.next(false);
+    //     }
+    //   },
+    //   async error =>{
+    //     console.log(error.status);
+    //     console.log(error.error);
+    //     console.log(error.headers);
+    //     this.httpSubject.next(false);
+    //   }
+    // );
+    // return this.httpSubject.toPromise();
   }
 
   create_mid_task(info) : Promise<{}>{
@@ -196,8 +196,6 @@ export class HttpService {
     let URL = `${this.SERVER_ADDRESS}/update-status/${type}?id=${id}&status=${status}`;     
     return this.httpClient.get(URL, {headers: this.header}).toPromise();
   }
-
-
   
   insert_comment_big(big_id : string, bigco_author: string, bigcomment: string, bigco_time: string, bigco_status : string) : Promise<{}> {
     let URL = `${this.SERVER_ADDRESS}/insert/big-comment?BigID=${big_id}&BigCoAuthor=${bigco_author}&BigComment=${bigcomment}&BigTime=${bigco_time}&BigCoStatus=${bigco_status}`;

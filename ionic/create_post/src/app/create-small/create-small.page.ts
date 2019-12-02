@@ -56,8 +56,11 @@ export class CreateSmallPage implements OnInit {
           tmp_post_big.push({
             BigID: value["BIG_ID"],
             level: value["BIG_LEVEL"],
-            title: value["BIG_TITLE"]
+            title: value["BIG_TITLE"],
+            status: value["BIG_STATUS"]
           });
+          if(tmp_post_big[tmp_post_big.length-1]['status'] == '1')
+            tmp_post_big.pop();
         });
         this.post_bigs = tmp_post_big;
       }
@@ -142,8 +145,11 @@ export class CreateSmallPage implements OnInit {
           tmp_post_mid.push({
             MidID: value["MID_ID"],
             level: value["MID_LEVEL"],
-            title: value["MID_TITLE"]
+            title: value["MID_TITLE"],
+            status: value["MID_STATUS"]
           });
+          if(tmp_post_mid[tmp_post_mid.length-1]['status'] == '1')
+            tmp_post_mid.pop();
         });
         this.post_mids = tmp_post_mid;
       }

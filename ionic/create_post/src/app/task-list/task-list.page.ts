@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpService } from '../http_service_module/http.service'
 import { StorageService } from '../storage_service_module/storage.service'
 import { NavController } from '@ionic/angular';
@@ -10,7 +10,7 @@ import { DataService } from '../services/data.service'
   templateUrl: './task-list.page.html',
   styleUrls: ['./task-list.page.scss'],
 })
-export class TaskListPage implements OnInit {
+export class TaskListPage {
   isPM: boolean;
   project_id: string;
   project_name: string;
@@ -31,14 +31,17 @@ export class TaskListPage implements OnInit {
     private alertCtrl: AlertController,
     private dataService : DataService
   ) {
-
+    
   }
 
   ionViewWillEnter(){
-    this.ngOnInit();
+    this.initailize();
   }
 
-  async ngOnInit() {
+  async initailize() {
+    this.notiIsOpen = false;
+    this.taskIsOpen = false;
+
     this.project_id = this.dataService.getProjectID();
     this.project_name = this.dataService.getProjectName();
     let manager_id = this.dataService.getManagerID();
@@ -142,8 +145,7 @@ export class TaskListPage implements OnInit {
                 created: val["SML_CREATED"],
                 desc: val["SML_DESC"],
                 attach: val["SML_ATTACHMENT"],
-                status: val['SML_STATUS'],
-                smls: []
+                status: val['SML_STATUS']
               });
 
               if(tmp[tmp.length-1]['status'] == -1){
@@ -159,32 +161,60 @@ export class TaskListPage implements OnInit {
         this.midIsOpen.push(new Map<string, boolean>().set(this.tasks[i]["mids"][j]["id"], false));
       }
     }
+    this.calculate_post_progress()
+  }
 
+  calculate_post_progress(){
     var progress = 0;
     for(var big=0; big<this.tasks.length; ++big){
-      var sml_progress = 0;
-      for(var mid=0; mid<this.tasks[big]['mids'].length; ++mid){
-        var sml_complete = 0;
-        for(var sml=0; sml<this.tasks[big]['mids'][mid]['smls'].length; ++mid){
-          if(this.tasks[big]['mids'][mid]['smls'][sml].status == 1){
-            ++sml_complete;
+
+      if(this.tasks[big]['status'] == 1){   // if big completed
+        progress += this.tasks[big]['weight'];    // add big progress
+        for(var mid=0; mid<this.tasks[big]['mids'].length; ++mid){    // make all descendant mids complete
+          this.http.update_post_state('mid', this.tasks[big]['mids'][mid]['id'], '1');
+          for(var sml=0; sml<this.tasks[big]['mids'][mid]["smls"].length; ++sml){   // make all descendant smls complete
+            if(this.tasks[big]['mids'][mid]['smls'][sml]['status'] == 1){
+              this.http.update_post_state('sml', this.tasks[big]['mids'][mid]['smls'][sml]['id'], '1');
+            }
           }
         }
-        sml_progress += sml_complete/this.tasks[big]['mids'][mid]['smls'].length;
-      }
-      progress += this.tasks[big]['weight'] * (sml_progress/this.tasks[big]['mids'].length);
-    }
-    this.http.update_project_progress(this.project_id, progress.toString());
-    
 
-    this.notiIsOpen = false;
-    this.taskIsOpen = false;
+      }else if(this.tasks[big]['mids'].length > 0){  // if big not completed and mid exists
+        for(var mid=0; mid<this.tasks[big]['mids'].length; ++mid){
+
+          if(this.tasks[big]['mids'][mid]['status'] == 1){  // if mid completed
+            progress += this.tasks[big]['weight'] * (1/this.tasks[big]['mids'].length);   // add mid progress
+            for(var sml=0; sml<this.tasks[big]['mids'][mid]["smls"].length; ++sml){   // make all descendant smls complete 
+              if(this.tasks[big]['mids'][mid]['smls'][sml]['status'] == 1){
+                this.http.update_post_state('sml', this.tasks[big]['mids'][mid]['smls'][sml]['id'], '1');
+              }
+            }
+  
+          }else if(this.tasks[big]['mids'][mid]["smls"].length > 0){  // if mid not completed and sml exists
+            var sml_complete = 0;
+            for(var sml=0; sml<this.tasks[big]['mids'][mid]["smls"].length; ++sml){   // count completed smls
+              if(this.tasks[big]['mids'][mid]['smls'][sml]['status'] == 1){
+                ++sml_complete;
+              }
+            }
+
+            var sml_progress = 0;
+            sml_progress += sml_complete/this.tasks[big]['mids'][mid]['smls'].length;
+            progress += this.tasks[big]['weight'] * (sml_progress/this.tasks[big]['mids'].length);
+          }
+        }  
+      }
+    }
+    console.log('prog'+progress);
+    this.http.update_project_progress(this.project_id, progress.toString());
   }
+
 
   toggle(argu: boolean) {
     console.log(argu);
     return argu ? false : true;
   }
+
   go_board(type: string, ...args: any) {
     var len = args.length-1;
     let title  = args[len]['title'];
@@ -196,11 +226,12 @@ export class TaskListPage implements OnInit {
     let desc  = args[len].desc;
     let attach = args[len].attach.split("*");
     let attaches = new Array();
-    let pre_path = `http://155.230.90.22:9000/download?path=/${this.project_id}/`;
+    let pre_path = `http://155.230.90.22:9000/download?path=`;
     
     for(var i=0; i<attach.length-1; ++i){
       var path = pre_path+attach[i];
-      attaches.push({name: attach[i], path: path});
+      var tmp = attach[i].split("/");
+      attaches.push({name: tmp[tmp.length-1], path: path});
     }
     
     this.dataService.setType(type);
@@ -265,7 +296,41 @@ export class TaskListPage implements OnInit {
     })
   }
   update_status(status: string){
-    console.log("update_status");
-    this.http.update_project_state(this.project_id,status).then(res=>{});
+    let header :string;
+    if(status == '1'){
+      header = "프로젝트 완료"
+    }else if(status == '-1'){
+      header = "프로젝트 삭제"
+    }
+
+    this.http.update_project_state(this.project_id,status).then(res=>{
+      if(res['check'] == 'yes'){
+        this.alertCtrl.create({
+          header: header,
+          subHeader: '성공!',
+          buttons: [{
+            text: '확인',
+            handler:() => {
+              this.navCtrl.navigateForward('/main');
+            }
+          }]
+        }).then(alert=>{
+          alert.present();
+        })
+      }else{
+        this.alertCtrl.create({
+          header: header,
+          subHeader: '실패 했습니다.',
+          buttons: [{
+            text: '확인',
+            handler:() => {
+              this.navCtrl.navigateForward('/main');
+            }
+          }]
+        }).then(alert=>{
+          alert.present();
+        })
+      }
+    });
   }
 }

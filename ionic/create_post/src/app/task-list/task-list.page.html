@@ -33,8 +33,8 @@
         </ion-item>
         <ion-list class="noti-list" *ngIf="notiIsOpen"> <!-- NOTI -->
           <ion-item class="noti-title" *ngFor="let noti of notis" (click)="go_board('noti', noti)">
-
             <ion-label class="ion-text-wrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ noti.title }}</ion-label>
+            <ion-icon *ngIf="noti.status == 1" name="checkmark-circle"></ion-icon>
           </ion-item>
         </ion-list>
         
@@ -48,6 +48,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
               <ion-icon [name]="bigIsOpen[big.id] ? 'arrow-dropdown' : 'arrow-dropright'"  (click)="bigIsOpen[big.id] = toggle(bigIsOpen[big.id])" style="padding-right:5px"></ion-icon>
               <ion-label class="ion-text-wrap" (click)="go_board('big', big)">{{ big.title }}</ion-label>
+              <ion-icon *ngIf="big.status == 1" name="checkmark-circle"></ion-icon>
             </ion-item>
 
             <ng-container *ngIf="bigIsOpen[big.id]">
@@ -56,11 +57,13 @@
                   <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
                   <ion-icon [name]="midIsOpen[mid.id] ? 'arrow-dropdown' : 'arrow-dropright'" (click)="midIsOpen[mid.id]= toggle(midIsOpen[mid.id])" style="padding-right:5px"></ion-icon>
                   <ion-label class="ion-text-wrap" (click)="go_board('mid', big, mid)">{{ mid.title }}</ion-label>
+                  <ion-icon *ngIf="mid.status == 1" name="checkmark-circle"></ion-icon>
                 </ion-item>
                 <ng-container *ngIf="midIsOpen[mid.id]">
                   <ion-item class="sml-title" *ngFor="let sml of mid['smls']" (click)="go_board('sml', big, mid, sml)"> <!-- SML -->
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
                     <ion-label class="ion-text-wrap">{{ sml.title }}</ion-label>
+                    <ion-icon *ngIf="sml.status == 1" name="checkmark-circle"></ion-icon>
                   </ion-item> <!-- SML -->
                 </ng-container>
 
@@ -72,9 +75,6 @@
 
       </ion-list>
       
-      
-      
-
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button color="light">
           <ion-icon name="add"></ion-icon>
@@ -92,7 +92,5 @@
         </ion-fab-list>
       </ion-fab>
       
-      
-        
   </ion-content>
 </ion-app>

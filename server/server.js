@@ -155,7 +155,7 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
         BIG_STATUS: BigStatus, BIG_AUTHOR: BigAuthor, BIG_CREATED: BigCreated, BIG_WEIGHT: BigWeight, BIG_PROGRESS: BigProgress
     };
 
-    mysqlDB.query('INSERT INTO POST_BIG set ?', data, function (err, results) {
+    mysqlDB.query('INSERT INTO POST_BIG set ?', data, async function (err, results) {
         var admit;
         if (!err) {
 
@@ -167,68 +167,30 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
-            for (var i = 0; i < files.length; ++i){
-                fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
-                var extension = path.extname(files[i].originalname);
-                console.log(extension);
-                if(extension == '.pdf' || extension == '.pptx' ||extension == '.docx')
-                var options = {
-                    mode: 'text', 
-                    pythonPath: '/usr/bin/python',//doesn't matter
-                    pythonOptions: ['-u'],
-                    scriptPath: '', //doesn't matter
-                    args: [dir + "/" + files[i].originalname] // SET THIS !!!!!  sample.docx  
-                };
-            
-                PythonShell.run('./public/extract_word/extract_text_from_file.py', options, function (err, extract_results) {
-                    if (err) throw err;
-                    else{
-                        console.log('results: %j', extract_results);
-                //         for(var j = 0; j< extract_results.length ; j++){
-                //             mysqlDB.query('select * from SEARCH where PROJ_ID=? and WORD = ?', [projectID, extract_results[j]], function (err, select_results) {
-                //                 var word;
-                //                 if (err) {
-                //                     word = { "word": "error" };
-                //                     console.log("word select ERROR");
-                //                     console.log(err);
-                //                     console.log(JSON.stringify(word));
-                //                 }
-                //                 else if (select_results.length > 0) {
-                //                     console.log(select_results);
-                //                     origin_file_path = select_results[i]['FILE_PATHS'];
-                //                     origin_file_path += "*" + dir + "/" + files[i].originalname;
-                //                     mysqlDB.query('UPDATE SEARCH set FILE_PATH = ? where PROJ_ID = ? and WORD = ?', [origin_file_path, projectID, extract_results[j]] , function(err,rows,field){
-                //                         if(err){
-                //                             console.log("SEARCH UPDATE 실패");
-                //                         }else{
-                //                             console.log("SEARCH UPDATE  성공")
-                //                         }
-                //                     });         
-                //                 }
-                //                 else {
-                //                     var search_data = {
-                //                         PROJ_ID: projectID, WORD: extract_results[j], FILE_PATHS: origin_file_path
-                //                     }
-                //                     mysqlDB.query('INSERT INTO SEARCH set ?', search_data , function(err,results){
-                //                         if(err){
-                //                             console.log("SEARCH insert 실패");
-                //                         }else{
-                //                             console.log("SEARCH insert 성공")
-                //                         }
-                //                     });   
-                //                 }
-                //             })
-                //         }
-                    }
-                });
+            for (var i = 0; i < files.length; ++i) {
+                fs.renameSync("./public/" + files[i].originalname, dir + "/" + files[i].originalname);
+                var extension = path.extname(files[i].originalname);    // move
+
+                if (extension == '.pdf' || extension == '.pptx' || extension == '.docx')
+                    var options = {
+                        mode: 'text',
+                        pythonPath: '/usr/bin/python',//doesn't matter
+                        pythonOptions: ['-u'],
+                        scriptPath: '', //doesn't matter
+                        args: [dir + "/" + files[i].originalname] // SET THIS !!!!!  sample.docx  
+                    };
+                var fpath = dir + '/' + files[i].originalname;
+                pythonShell(fpath, options, projectID);
             }
+
             var result_attach = BigAttach.split('*');
-            console.log("result _attach" + result_attach);
+            console.log("result_attach" + result_attach);
             var attaches='';
             for(var i = 0; i<result_attach.length-1; i++){
                 attaches += dir +'/' + result_attach[i] +'*';
                 console.log("attaches " +i +" :"+ attaches);
             }
+
             mysqlDB.query('UPDATE POST_BIG set BIG_ATTACHMENT = ? where BIG_ID = ?', [attaches, result_id] , function(err,rows,field){
                 if(err){
                     console.log(err);
@@ -253,6 +215,66 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
     })
 
 })
+
+function pythonShell(fpath, options, projectID){
+    console.log("path: "+fpath);
+    console.log("options: "+options);
+
+    PythonShell.run('./public/extract_word/extract_text_from_file.py', options, function (err, extract_results) {
+        if (err) throw err;
+        else{
+            console.log('results: %j', extract_results);
+            for(var j = 0; j< extract_results.length; j++){
+                searchQueries(fpath, extract_results[j], projectID);
+            }   
+        }
+    });
+}
+
+function searchQueries(fpath, word, projectID){
+    console.log("sub path: "+fpath);
+    console.log("sub word: "+word);
+
+    mysqlDB.query('select * from SEARCH where PROJ_ID=? and WORD = ?', [projectID, word], function (err, select_results) {
+        if (err) {
+            var res_word = { "word": "error" };
+            console.log("word select ERROR");
+            console.log(err);
+            console.log(JSON.stringify(res_word));
+        }
+        else if (select_results.length > 0) {
+            console.log(select_results);
+            var new_path = select_results[0]['FILE_PATHS'] + '*' + fpath; 
+            mysqlDB.query('UPDATE SEARCH set FILE_PATHS = ? where PROJ_ID = ? and WORD = ?', [new_path, projectID, word],
+             function(err,rows,field){
+                if(err){
+                    console.log(err);
+                    console.log("SEARCH UPDATE 실패");
+                }else{
+                    console.log("SEARCH UPDATE 성공")
+                }
+            });         
+        }
+        else {
+            var search_data = {
+                PROJ_ID: projectID,
+                WORD: word,
+                FILE_PATHS: fpath
+            }
+            console.log(search_data);
+            mysqlDB.query('INSERT INTO SEARCH set ?', search_data, function(err,results){
+                if(err){
+                    console.log(err);
+                    console.log("SEARCH insert 실패");
+                }else{
+                    console.log(results);
+                    console.log("SEARCH insert 성공")
+                }
+            });   
+        }
+    })
+}
+
 
 // GENERATE-TASK-Middle
 router.route("/task/createMID").post(upload.array('userFiles', 12), function (req, res) {
@@ -515,7 +537,7 @@ router.route("/taskView/Big/select").get(function (req, res) {
     var proj_id = req.query.proj_id;
     console.log("======= Big Task Select =======\n");
 
-    mysqlDB.query('select * from POST_BIG where PROJ_ID = ? order by BIG_LEVEL', [proj_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_BIG where PROJ_ID = ? and (BIG_STATUS=0 or BIG_STATUS=1) order by BIG_LEVEL', [proj_id], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
         }
@@ -531,7 +553,7 @@ router.route("/taskView/Mid/select").get(function (req, res) {
     var big_id = req.query.big_id;
     console.log("======= Mid Task Select =======\n");
 
-    mysqlDB.query('select * from POST_MID where BIG_ID = ? order by MID_LEVEL', [big_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_MID where BIG_ID = ? and (MID_STATUS=0 or MID_STATUS=1) order by MID_LEVEL', [big_id], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
         }
@@ -548,7 +570,7 @@ router.route("/taskView/Sml/select").get(function (req, res) {
     var mid_id = req.query.mid_id;
     console.log("======= Sml Task Select =======\n");
 
-    mysqlDB.query('select * from POST_SML where MID_ID = ? order by SML_CREATED', [mid_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_SML where MID_ID = ? and (SML_STATUS=0 or or SML_STATUS=1) order by SML_CREATED', [mid_id], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
         }
@@ -566,7 +588,7 @@ router.route("/notification/select").get(function (req, res) {
     var proj_id = req.query.proj_id;
     console.log("======= Notification Select =======\n");
 
-    mysqlDB.query('select * from POST_NOTI where proj_id = ?', [proj_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_NOTI where proj_id = ? and (NOTI_STATUS=0 or NOTI_STATUS=1)', [proj_id], function (err, rows, fields) {
         if (err) {
             console.log("error입니다")
         }
@@ -603,6 +625,70 @@ router.route("/attend/member").post(function (req, res) {
         }
     })
 })
+router.route("/update-status/noti").get(function(req,res){ //NOTI 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_NOTI set NOTI_STATUS = ? where NOTI_ID=?',[status,id],function(err,rows,fields){
+        var project;
+        if(err){
+            console.log(err);
+            project = {"check":"no"}
+            res.send(JSON.stringify(project))
+        }else{
+            console.log("상태변경 성공");
+            project = {"check":"yes"}
+            res.send(JSON.stringify(project))
+        }
+    })
+});
+router.route("/update-status/big").get(function(req,res){ //BIG 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_BIG set BIG_STATUS = ? where BIG_ID=?',[status,id],function(err,rows,fields){
+        var project;
+        if(err){
+            console.log(err);
+            project = {"check":"no"}
+            res.send(JSON.stringify(project))
+        }else{
+            console.log("상태변경 성공");
+            project = {"check":"yes"}
+            res.send(JSON.stringify(project))
+        }
+    })
+});
+router.route("/update-status/mid").get(function(req,res){ //MID 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_MID set MID_STATUS = ? where MID_ID=?',[status,id],function(err,rows,fields){
+        var project;
+        if(err){
+            console.log(err);
+            project = {"check":"no"}
+            res.send(JSON.stringify(project))
+        }else{
+            console.log("상태변경 성공");
+            project = {"check":"yes"}
+            res.send(JSON.stringify(project))
+        }
+    })
+});
+router.route("/update-status/sml").get(function(req,res){ //SML 상태 변경
+    var id = req.query.id;
+    var status = req.query.status;
+    mysqlDB.query('update POST_SML set SML_STATUS = ? where SML_ID=?',[status,id],function(err,rows,fields){
+        var project;
+        if(err){
+            console.log(err);
+            project = {"check":"no"}
+            res.send(JSON.stringify(project))
+        }else{
+            console.log("상태변경 성공");
+            project = {"check":"yes"}
+            res.send(JSON.stringify(project))
+        }
+    })
+});
 
 router.route("/update-status/project").get(function(req,res){ //프로젝트 상태 변경
     var projectID = req.query.proj_id;
@@ -623,9 +709,11 @@ router.route("/update-status/project").get(function(req,res){ //프로젝트 상
 router.route("/update-progress/project").get(function(req,res){ //프로젝트 상태 변경
     var projectID = req.query.proj_id;
     var projectProgress = req.query.proj_progress;
-    mysqlDB.query('update PROJECT set PROJ_PROGRESS = ? where PROJ_ID=?',[projectProgress,projectID],function(err,rows,fields){
+    console.log(projectID +' '+ projectProgress)
+    mysqlDB.query('update PROJECT set PROJ_PROGRESS = ? where PROJ_ID=?',[projectProgress, projectID],function(err,rows,fields){
         var project;
         if(err){
+            console.log(err);
             console.log("에러 발생");
             project = {"check":"no"}
             res.send(JSON.stringify(project))
@@ -644,7 +732,6 @@ router.route('/download').get(function(req, res){
 
 
 router.route("/insert/big-comment").get(function (req, res) {
-    
     var BigID = req.query.BigID;
     var BigCoAuthor = req.query.BigCoAuthor;
     var BigComment = req.query.BigComment;
@@ -671,7 +758,6 @@ router.route("/insert/big-comment").get(function (req, res) {
 })
 
 router.route("/insert/mid-comment").get(function (req, res) {
-    
     var MidID = req.query.MidID;
     var MidCoAuthor = req.query.MidCoAuthor;
     var MidComment = req.query.MidComment;
@@ -699,7 +785,6 @@ router.route("/insert/mid-comment").get(function (req, res) {
 
 
 router.route("/insert/small-comment").get(function (req, res) {
-    
     var SmlID = req.query.SmlID;
     var SmlCoAuthor = req.query.SmlCoAuthor;
     var SmlComment = req.query.SmlComment;
@@ -728,7 +813,6 @@ router.route("/insert/small-comment").get(function (req, res) {
 
 
 router.route("/insert/noti-comment").get(function (req, res) {
-    
     var NotiID = req.query.NotiID;
     var NotiCoAuthor = req.query.NotiCoAuthor;
     var NotiComment = req.query.NotiComment;

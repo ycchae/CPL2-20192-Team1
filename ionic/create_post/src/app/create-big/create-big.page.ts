@@ -71,23 +71,24 @@ export class CreateBigPage implements OnInit{
       this.formData.append('userFiles', file, file.name);
       original_names += file.name+"*";
     });
-
-    this.formData.append('ProjectID', this.projectID);
-    this.formData.append('BigAuthor', this.author);
-    this.formData.append('BigStatus', '0');
-    this.formData.append('BigProgress', '0');
-    this.formData.append('BigTitle', this.uploadForm.get('BigTitle').value);
-    this.formData.append('BigLevel', this.uploadForm.get('BigLevel').value);
-    this.formData.append('BigStart', start);
-    this.formData.append('BigEnd', end);
-    this.formData.append('BigWeight', this.uploadForm.get('BigWeight').value);
-    this.formData.append('BigDesc', this.uploadForm.get('BigDesc').value);
-    this.formData.append('BigCreated', created);
-    this.formData.append('BigAttach', original_names);
+    
+    this.formData.set('ProjectID', this.projectID);
+    this.formData.set('BigAuthor', this.author);
+    this.formData.set('BigStatus', '0');
+    this.formData.set('BigProgress', '0');
+    this.formData.set('BigTitle', this.uploadForm.get('BigTitle').value);
+    this.formData.set('BigLevel', this.uploadForm.get('BigLevel').value);
+    this.formData.set('BigStart', start);
+    this.formData.set('BigEnd', end);
+    this.formData.set('BigWeight', this.uploadForm.get('BigWeight').value);
+    this.formData.set('BigDesc', this.uploadForm.get('BigDesc').value);
+    this.formData.set('BigCreated', created);
+    this.formData.set('BigAttach', original_names);
     
     this.http.create_big_task(this.formData).then(
       ret => {
-        if (ret) {
+        console.log(ret['create']);
+        if (ret['create'] == 'success') {
             this.alertController.create({
               header: 'Confirm!',
               subHeader: '작업 추가 성공!',
@@ -105,9 +106,12 @@ export class CreateBigPage implements OnInit{
           this.alertController.create({
             header: 'Reject!',
             subHeader: '작업 추가 실패',
-            message: '잠시후 다시 시도해주세요.',
+            message: '입력값을 확인해주세요.',
             buttons: [{
-              text: '확인'
+              text: '확인',
+              handler: () => {
+                this.formData.delete('userFiles');
+              }
             }]
           }).then(alert => {
             alert.present();
@@ -130,7 +134,11 @@ export class CreateBigPage implements OnInit{
       subHeader: '종료 날짜 오류',
       message: '종료 날짜는 시작 날짜보다 이후여야 합니다',
       buttons: [{
-        text: '확인'
+        text: '확인',
+        handler:()=>{
+          this.uploadForm.setValue({'BigStart': ''});
+          this.uploadForm.setValue({'BigEnd': ''});
+        }
       }]
     }).then(alert => {
       alert.present();
