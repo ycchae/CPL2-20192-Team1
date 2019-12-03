@@ -39,6 +39,7 @@ export class TaskListPage {
   }
 
   async initailize() {
+    console.log("initialize");
     this.notiIsOpen = false;
     this.taskIsOpen = false;
 
@@ -58,8 +59,8 @@ export class TaskListPage {
 
     await this.http.get_noti_list(this.project_id).then(
       (res: any[]) => {
-        console.log(res);
         let tmp: Array<{}> = [];
+        if(res == null) return;
         res.forEach(function (val, idx, arr) {
           tmp.push({
             id: val["NOTI_ID"],
@@ -76,6 +77,7 @@ export class TaskListPage {
     await this.http.get_task_big_listp(this.project_id).then(
       (res: any[]) => {
         let tmp: Array<{}> = [];
+        if(res == null) return;
         res.forEach(function (val, idx, arr) {
           tmp.push({
             id: val["BIG_ID"],
@@ -106,6 +108,7 @@ export class TaskListPage {
       await this.http.get_task_mid_listp(this.tasks[i]["id"]).then(
         (res: any[]) => {
           let tmp: Array<{}> = [];
+          if(res == null) return;
           res.forEach(function (val, idx, arr) {
             tmp.push({
               id: val["MID_ID"],
@@ -116,7 +119,7 @@ export class TaskListPage {
               created: val["MID_CREATED"],
               desc: val["MID_DESC"],
               attach: val["MID_ATTACHMENT"],
-              status: val['MID_STAUS'],
+              status: val['MID_STATUS'],
               smls: []
             });
             if(tmp[tmp.length-1]['status'] == -1){
@@ -134,7 +137,9 @@ export class TaskListPage {
       for (let j = 0; j < this.tasks[i]["mids"].length; ++j) {
         await this.http.get_task_sml_listp(this.tasks[i]["mids"][j]["id"]).then(
           (res: any[]) => {
+            console.log(this.tasks[i]["mids"][j]["id"]);
             let tmp: Array<{}> = [];
+            if(res == null) return;
             res.forEach(function (val, idx, arr) {
               tmp.push({
                 id: val["SML_ID"],
@@ -161,20 +166,26 @@ export class TaskListPage {
         this.midIsOpen.push(new Map<string, boolean>().set(this.tasks[i]["mids"][j]["id"], false));
       }
     }
-    this.calculate_post_progress()
+    console.log("?");
+    this.calculate_post_progress();
   }
 
   calculate_post_progress(){
     var progress = 0;
+    console.log("calculate "+this.tasks.length)
     for(var big=0; big<this.tasks.length; ++big){
 
       if(this.tasks[big]['status'] == 1){   // if big completed
         progress += this.tasks[big]['weight'];    // add big progress
         for(var mid=0; mid<this.tasks[big]['mids'].length; ++mid){    // make all descendant mids complete
-          this.http.update_post_state('mid', this.tasks[big]['mids'][mid]['id'], '1');
+          if(this.tasks[big]['mids'][mid]['status'] != '1'){
+            this.http.update_post_state('mid', this.tasks[big]['mids'][mid]['id'], '1');
+            this.tasks[big]['mids'][mid]['status'] = '1';
+          }
           for(var sml=0; sml<this.tasks[big]['mids'][mid]["smls"].length; ++sml){   // make all descendant smls complete
-            if(this.tasks[big]['mids'][mid]['smls'][sml]['status'] == 1){
+            if(this.tasks[big]['mids'][mid]['smls'][sml]['status'] != '1'){
               this.http.update_post_state('sml', this.tasks[big]['mids'][mid]['smls'][sml]['id'], '1');
+              this.tasks[big]['mids'][mid]['smls'][sml]['status'] = '1';
             }
           }
         }
@@ -185,8 +196,9 @@ export class TaskListPage {
           if(this.tasks[big]['mids'][mid]['status'] == 1){  // if mid completed
             progress += this.tasks[big]['weight'] * (1/this.tasks[big]['mids'].length);   // add mid progress
             for(var sml=0; sml<this.tasks[big]['mids'][mid]["smls"].length; ++sml){   // make all descendant smls complete 
-              if(this.tasks[big]['mids'][mid]['smls'][sml]['status'] == 1){
+              if(this.tasks[big]['mids'][mid]['smls'][sml]['status'] != '1'){
                 this.http.update_post_state('sml', this.tasks[big]['mids'][mid]['smls'][sml]['id'], '1');
+                this.tasks[big]['mids'][mid]['smls'][sml]['status'] = '1';
               }
             }
   

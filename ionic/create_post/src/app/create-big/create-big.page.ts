@@ -14,7 +14,6 @@ import { DataService } from '../services/data.service'
 export class CreateBigPage implements OnInit{
   uploadForm: FormGroup;
   attaches = new Set();
-  attaches_name = new Set();
 
   author: string;
   projectID: string;
@@ -57,11 +56,13 @@ export class CreateBigPage implements OnInit{
     } 
   }
 
+  sdate: string;
+  edate: string;
   create_task() {    
     let start:string, end:string, created:string;
-    start = this.uploadForm.get('BigStart').value;
+    this.sdate = start = this.uploadForm.get('BigStart').value;
     start = start.substr(0, 10) + " " + start.split('T')[1].substr(0, 8);
-    end = this.uploadForm.get('BigEnd').value;
+    this.edate = end = this.uploadForm.get('BigEnd').value;
     end = end.substr(0, 10) + " " + end.split('T')[1].substr(0, 8);
     let now = new Date().toISOString();
     created = now.substr(0, 10) + " " + now.split('T')[1].substr(0, 8);
@@ -111,15 +112,15 @@ export class CreateBigPage implements OnInit{
               text: '확인',
               handler: () => {
                 this.formData.delete('userFiles');
+                this.formData.set('BidStart', this.sdate);
+                this.formData.set('BidEnd', this.edate);
               }
             }]
           }).then(alert => {
             alert.present();
           });
         }
-      }
-    );
-  
+      });
   }
 
   date_validate() : boolean{
@@ -136,8 +137,8 @@ export class CreateBigPage implements OnInit{
       buttons: [{
         text: '확인',
         handler:()=>{
-          this.uploadForm.setValue({'BigStart': ''});
-          this.uploadForm.setValue({'BigEnd': ''});
+          this.formData.set('BigStart', '');
+          this.formData.set('BigEnd', '');
         }
       }]
     }).then(alert => {

@@ -61,70 +61,17 @@ export class HttpService {
   create_big_task(info) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/task/createBIG`;
     return this.httpClient.post(URL, info).toPromise();
-    // .subscribe(
-    //    async res => {
-    //     console.log("TASK Create"+ res["create"])
-    //     if(res["cretae"] === "success"){
-    //       this.httpSubject.next(true);
-    //     }else{
-    //       this.httpSubject.next(false);
-    //     }
-    //   },
-    //   async error =>{
-    //     console.log(error.status);
-    //     console.log(error.error);
-    //     console.log(error.headers);
-    //     this.httpSubject.next(false);
-    //   }
-    // );
-    // return this.httpSubject.toPromise();
   }
 
   create_mid_task(info) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/task/createMID`;
-    this.httpClient.post(URL, info)//, {headers: this.header})
-    .subscribe(
-       async res => {
-        console.log("TASK Create"+ res["create"])
-        if(res["cretae"] === "success"){
-          this.httpSubject.next(true);
-        }else{
-          this.httpSubject.next(false);
-        }
-      },
-      async error =>{
-        console.log(error.status);
-        console.log(error.error);
-        console.log(error.headers);
-        this.httpSubject.next(false);
-      }
-    );
-    return this.httpSubject.toPromise();
+    return this.httpClient.post(URL, info).toPromise();
   }
 
   create_sml_task(info) : Promise<{}> {
     let URL = `${this.SERVER_ADDRESS}/task/createSML`;
-    this.httpClient.post(URL, info)//, {headers: this.header})
-    .subscribe(
-       async res => {
-        console.log("TASK Create"+ res["create"])
-        if(res["cretae"] === "success"){
-          this.httpSubject.next(true);
-        }else{
-          this.httpSubject.next(false);
-        }
-      },
-      async error =>{
-        console.log(error.status);
-        console.log(error.error);
-        console.log(error.headers);
-        this.httpSubject.next(false);
-      }
-    );
-    return this.httpSubject.toPromise();
+    return this.httpClient.post(URL, info).toPromise();
   }
-
-
 
   generate_project(info) : Observable<{}> {
     let URL = `${this.SERVER_ADDRESS}/project/create`;

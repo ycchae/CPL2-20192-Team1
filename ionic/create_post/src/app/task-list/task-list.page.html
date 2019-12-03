@@ -56,7 +56,7 @@
                 <ion-item class="mid-title">
                   <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
                   <ion-icon [name]="midIsOpen[mid.id] ? 'arrow-dropdown' : 'arrow-dropright'" (click)="midIsOpen[mid.id]= toggle(midIsOpen[mid.id])" style="padding-right:5px"></ion-icon>
-                  <ion-label class="ion-text-wrap" (click)="go_board('mid', big, mid)">{{ mid.title }}</ion-label>
+                  <ion-label class="ion-text-wrap" (click)="go_board('mid', big, mid)">{{ mid.title}}</ion-label>
                   <ion-icon *ngIf="mid.status == 1" name="checkmark-circle"></ion-icon>
                 </ion-item>
                 <ng-container *ngIf="midIsOpen[mid.id]">

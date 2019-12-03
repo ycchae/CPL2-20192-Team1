@@ -158,9 +158,6 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
     mysqlDB.query('INSERT INTO POST_BIG set ?', data, async function (err, results) {
         var admit;
         if (!err) {
-
-            console.log("Create task success");
-
             var result_id = results["insertId"];
             var dir = "./public/" + projectID + "/" +result_id;
 
@@ -188,18 +185,15 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
             var attaches='';
             for(var i = 0; i<result_attach.length-1; i++){
                 attaches += dir +'/' + result_attach[i] +'*';
-                console.log("attaches " +i +" :"+ attaches);
             }
 
             mysqlDB.query('UPDATE POST_BIG set BIG_ATTACHMENT = ? where BIG_ID = ?', [attaches, result_id] , function(err,rows,field){
                 if(err){
                     console.log(err);
-                    console.log("post update 실패");
                     admit = { "create": "deny" };
                 }else{
                     console.log("post update 성공")
                     admit = { "create": "success" };
-                   
                 }
                 res.write(JSON.stringify(admit));
                 res.end();
@@ -213,7 +207,6 @@ router.route("/task/createBIG").post(upload.array('userFiles', 12), function (re
             res.end();
         }
     })
-
 })
 
 function pythonShell(fpath, options, projectID){
@@ -294,7 +287,6 @@ router.route("/task/createMID").post(upload.array('userFiles', 12), function (re
     var MidAuthor = req.body.MidAuthor;
     var MidCreated = req.body.MidCreated;
 
-
     console.log(`BigID : ${BigID} , MidLevel : ${MidLevel}, MidTitle : ${MidTitle}, MidStart : ${MidStart} , MidEnd : ${MidEnd}, MidDesc : ${MidDesc}, `
         + `MidAttach : ${MidAttach} , MidStatus : ${MidStatus}, MidAuthor : ${MidAuthor}, MidCreated : ${MidCreated}`);
 
@@ -306,36 +298,45 @@ router.route("/task/createMID").post(upload.array('userFiles', 12), function (re
         var admit;
         if (!err) {
             var result_id = results["insertId"];
-            var dir = `./public/${projectID}/${BigID}/${results["insertId"]}`;
+            var dir = `./public/${projectID}/${BigID}/${result_id}`;
+            
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
-            for (var i = 0; i < files.length; ++i)
+            for (var i = 0; i < files.length; ++i){
                 fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
-            
+                var extension = path.extname(files[i].originalname);    // move
+
+                if (extension == '.pdf' || extension == '.pptx' || extension == '.docx')
+                    var options = {
+                        mode: 'text',
+                        pythonPath: '/usr/bin/python',//doesn't matter
+                        pythonOptions: ['-u'],
+                        scriptPath: '', //doesn't matter
+                        args: [dir + "/" + files[i].originalname] // SET THIS !!!!!  sample.docx  
+                    };
+                var fpath = dir + '/' + files[i].originalname;
+                pythonShell(fpath, options, projectID);
+            }
 
             var result_attach = MidAttach.split('*');
             var attaches='';
             for(var i = 0; i<result_attach.length-1; i++){
                 attaches += dir +'/' + result_attach[i] +'*';
             }
-            mysqlDB.query('UPDATE set MID_ATTACHMENT = ? from POST_MID where MID_ID = ?', [attaches, result_id] , function(err,rows,field){
+            mysqlDB.query('UPDATE POST_MID set MID_ATTACHMENT = ? where MID_ID = ?', [attaches, result_id] , function(err,rows,field){
                 if(err){
-                    console.log("post update 실패");
+                    console.log(err);
                     admit = { "create": "deny" };
                 }else{
-                    console.log("post update 성공")
+                    console.log("post update 성공");
                     admit = { "create": "success" };
-                    
                 }
                 res.write(JSON.stringify(admit));
                 res.end();
-            });   
-
-
-         
+            });            
         } else {
-            console.log("TASK INSERT ERROR");
+            console.log(err);
             admit = { "create": "deny" };
             res.write(JSON.stringify(admit));
             res.end();
@@ -361,7 +362,6 @@ router.route("/task/createSML").post(upload.array('userFiles', 12), function (re
     var SmlAuthor = req.body.SmlAuthor;
     var SmlCreated = req.body.SmlCreated;
 
-
     console.log(`MidID : ${MidID} , SmlTitle : ${SmlTitle}, SmlStart : ${SmlStart} , SmlEnd : ${SmlEnd}, SmlDesc : ${SmlDesc}, `
         + `SmlAttach : ${SmlAttach} , SmlStatus : ${SmlStatus}, SmlAuthor : ${SmlAuthor}, SmlCreated : ${SmlCreated}`);
 
@@ -373,20 +373,33 @@ router.route("/task/createSML").post(upload.array('userFiles', 12), function (re
         var admit;
         if (!err) {
             var result_id = results["insertId"];
-            var dir = `./public/${projectID}/${BigID}/${MidID}/${results["insertId"]}`;
+            var dir = `./public/${projectID}/${BigID}/${MidID}/${result_id}`;
+            
             if (!fs.existsSync(dir))
                 fs.mkdirSync(dir);
                 
-            for (var i = 0; i < files.length; ++i)
+            for (var i = 0; i < files.length; ++i){
                 fs.rename("./public/" + files[i].originalname, dir + "/" + files[i].originalname, function (err) { });
-
+                var extension = path.extname(files[i].originalname);    // move
+                
+                if (extension == '.pdf' || extension == '.pptx' || extension == '.docx')
+                    var options = {
+                        mode: 'text',
+                        pythonPath: '/usr/bin/python',//doesn't matter
+                        pythonOptions: ['-u'],
+                        scriptPath: '', //doesn't matter
+                        args: [dir + "/" + files[i].originalname] // SET THIS !!!!!  sample.docx  
+                    };
+                var fpath = dir + '/' + files[i].originalname;
+                pythonShell(fpath, options, projectID);
+            }
 
             var result_attach = SmlAttach.split('*');
             var attaches='';
             for(var i = 0; i<result_attach.length-1; i++){
                 attaches += dir +'/' + result_attach[i] +'*';
             }
-            mysqlDB.query('UPDATE set SML_ATTACHMENT = ? from POST_SML where SML_ID = ?', [attaches, result_id] , function(err,rows,field){
+            mysqlDB.query('UPDATE POST_SML set SML_ATTACHMENT = ? where SML_ID = ?', [attaches, result_id] , function(err,rows,field){
                 if(err){
                     console.log("post update 실패");
                     admit = { "create": "deny" };
@@ -480,7 +493,8 @@ router.route("/project/select").get(function (req, res) {
 
     mysqlDB.query('select * from PROJECT pj where PROJ_STATUS=0 AND EXISTS ( select * from ATTENDENCE at where at.USER_ID = ? AND pj.PROJ_ID = at.PROJ_ID)', [user_id], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
+            res.end();
         }
         else {
             console.log(rows);
@@ -501,7 +515,8 @@ router.route("/projectName/select").get(function (req, res) {
 
     mysqlDB.query('select PROJ_NAME from PROJECT where PROJ_ID = ?', [proj_id], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
+            res.end();
         }
         else {
             console.log(rows);
@@ -520,7 +535,8 @@ router.route("/projectInfo/select").get(function (req, res) {
 
     mysqlDB.query('select PROJ_ID, PROJ_NAME, PROJ_MGR_UID, PROJ_DESC from PROJECT where PROJ_URL = ?', [proj_url], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
+            res.end();
         }
         else {
             console.log(rows);
@@ -539,7 +555,8 @@ router.route("/taskView/Big/select").get(function (req, res) {
 
     mysqlDB.query('select * from POST_BIG where PROJ_ID = ? and (BIG_STATUS=0 or BIG_STATUS=1) order by BIG_LEVEL', [proj_id], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
+            res.end();
         }
         else {
             console.log(rows);
@@ -555,7 +572,8 @@ router.route("/taskView/Mid/select").get(function (req, res) {
 
     mysqlDB.query('select * from POST_MID where BIG_ID = ? and (MID_STATUS=0 or MID_STATUS=1) order by MID_LEVEL', [big_id], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
+            res.end();
         }
         else {
             console.log(rows);
@@ -570,9 +588,10 @@ router.route("/taskView/Sml/select").get(function (req, res) {
     var mid_id = req.query.mid_id;
     console.log("======= Sml Task Select =======\n");
 
-    mysqlDB.query('select * from POST_SML where MID_ID = ? and (SML_STATUS=0 or or SML_STATUS=1) order by SML_CREATED', [mid_id], function (err, rows, fields) {
+    mysqlDB.query('select * from POST_SML where MID_ID = ? and (SML_STATUS=0 or SML_STATUS=1) order by SML_CREATED', [mid_id], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
+            res.end();
         }
         else {
             console.log(rows);
@@ -590,7 +609,8 @@ router.route("/notification/select").get(function (req, res) {
 
     mysqlDB.query('select * from POST_NOTI where proj_id = ? and (NOTI_STATUS=0 or NOTI_STATUS=1)', [proj_id], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
+            res.end();
         }
         else {
             console.log(rows);
@@ -696,7 +716,7 @@ router.route("/update-status/project").get(function(req,res){ //프로젝트 상
     mysqlDB.query('update PROJECT set PROJ_STATUS = ? where PROJ_ID=?',[projectSTATUS,projectID],function(err,rows,fields){
         var project;
         if(err){
-            console.log("에러 발생");
+            console.log(err);
             project = {"check":"no"}
             res.send(JSON.stringify(project))
         }else{
@@ -714,7 +734,6 @@ router.route("/update-progress/project").get(function(req,res){ //프로젝트 �
         var project;
         if(err){
             console.log(err);
-            console.log("에러 발생");
             project = {"check":"no"}
             res.send(JSON.stringify(project))
         }else{
@@ -846,7 +865,7 @@ router.route("/select/big-comment").get(function (req, res) {
 
     mysqlDB.query('select * from COMMENT_BIG where BIG_ID = ?', [BigID], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
         }
         else {
             console.log(rows);
@@ -863,7 +882,7 @@ router.route("/select/mid-comment").get(function (req, res) {
 
     mysqlDB.query('select * from COMMENT_MID where MID_ID = ?', [MidID], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
         }
         else {
             console.log(rows);
@@ -880,13 +899,13 @@ router.route("/select/sml-comment").get(function (req, res) {
 
     mysqlDB.query('select * from COMMENT_SML where SML_ID = ?', [SmlID], function (err, rows, fields) {
         if (err) {
-            console.log("error입니다")
+            console.log(err);
         }
         else {
             console.log(rows);
             res.write(JSON.stringify(rows));
-            res.end();
         }
+        res.end();
     })
 })
 

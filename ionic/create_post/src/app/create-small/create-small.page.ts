@@ -30,10 +30,15 @@ export class CreateSmallPage implements OnInit {
     private dataService: DataService,
     private formBuilder: FormBuilder
   ) {
+    storage.get_uid().then(val => {
+      this.author = val;
+    });
+    this.projectID = this.dataService.getProjectID();
+
     this.formData = new FormData();
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.uploadForm = this.formBuilder.group({
       BigID: new FormControl(),
       MidID: new FormControl(),
@@ -43,12 +48,7 @@ export class CreateSmallPage implements OnInit {
       SmlDesc: new FormControl(),
       userFiles: new FormControl([''])
     });
-
-    await this.storage.get_uid().then(val => {
-      this.author = val;
-    });
     
-    this.projectID = this.dataService.getProjectID();
     this.http.get_task_big_list(this.projectID).subscribe(
       (res: any[]) => {
         let tmp_post_big: Array<{}> = [];
@@ -68,7 +68,6 @@ export class CreateSmallPage implements OnInit {
   }
 
   setFiles($event) {
-    console.log($event);
     let files: FileList;
     files = $event.srcElement.files;
     for (let i = 0; i < files.length; ++i) {
@@ -76,11 +75,13 @@ export class CreateSmallPage implements OnInit {
     }
   }
 
+  sdate: string;
+  edate: string;
   create_task() {
     let start: string, end: string, created: string;
-    start = this.uploadForm.get('SmlStart').value;
+    this.sdate = start = this.uploadForm.get('SmlStart').value;
     start = start.substr(0, 10) + " " + start.split('T')[1].substr(0, 8);
-    end = this.uploadForm.get('SmlEnd').value;
+    this.edate = end = this.uploadForm.get('SmlEnd').value;
     end = end.substr(0, 10) + " " + end.split('T')[1].substr(0, 8);
     let now = new Date().toISOString();
     created = now.substr(0, 10) + " " + now.split('T')[1].substr(0, 8);
@@ -91,21 +92,21 @@ export class CreateSmallPage implements OnInit {
       original_names += file.name + "*";
     });
 
-    this.formData.append('ProjectID', this.projectID);
-    this.formData.append('BigID', this.uploadForm.get('BigID').value);
-    this.formData.append('MidID', this.uploadForm.get('MidID').value);
-    this.formData.append('SmlTitle', this.uploadForm.get('SmlTitle').value);
-    this.formData.append('SmlStart', start);
-    this.formData.append('SmlEnd', end);
-    this.formData.append('SmlDesc', this.uploadForm.get('SmlDesc').value);
-    this.formData.append('SmlStatus', '0');
-    this.formData.append('SmlAuthor', this.author);
-    this.formData.append('SmlCreated', created);
-    this.formData.append('SmlAttach', original_names);
+    this.formData.set('ProjectID', this.projectID);
+    this.formData.set('BigID', this.uploadForm.get('BigID').value);
+    this.formData.set('MidID', this.uploadForm.get('MidID').value);
+    this.formData.set('SmlTitle', this.uploadForm.get('SmlTitle').value);
+    this.formData.set('SmlStart', start);
+    this.formData.set('SmlEnd', end);
+    this.formData.set('SmlDesc', this.uploadForm.get('SmlDesc').value);
+    this.formData.set('SmlStatus', '0');
+    this.formData.set('SmlAuthor', this.author);
+    this.formData.set('SmlCreated', created);
+    this.formData.set('SmlAttach', original_names);
 
     this.http.create_sml_task(this.formData).then(
       ret => {
-        if (ret) {
+        if (ret['create'] == 'success') {
           this.alertController.create({
             header: 'Confirm!',
             subHeader: '작업 추가 성공!',
@@ -125,7 +126,12 @@ export class CreateSmallPage implements OnInit {
             subHeader: '작업 추가 실패',
             message: '잠시후 다시 시도해주세요.',
             buttons: [{
-              text: '확인'
+              text: '확인',
+              handler: () => {
+                this.formData.delete('userFiles');
+                this.uploadForm.setValue({'SmlStart': this.sdate});
+                this.uploadForm.setValue({'SmlEnd': this.edate});
+              }
             }]
           }).then(alert => {
             alert.present();
@@ -168,7 +174,11 @@ export class CreateSmallPage implements OnInit {
       subHeader: '종료 날짜 오류',
       message: '종료 날짜는 시작 날짜보다 이후여야 합니다',
       buttons: [{
-        text: '확인'
+        text: '확인',
+        handler:()=>{
+          this.uploadForm.setValue({'SmlStart': ''});
+          this.uploadForm.setValue({'SmlEnd': ''});
+        }
       }]
     }).then(alert => {
       alert.present();

@@ -10,7 +10,7 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./login-page.page.scss'],
 })
 export class LoginPagePage implements OnInit {
-  SERVER_ADDRESS: string = "http://13.124.150.35:9000";
+  SERVER_ADDRESS: string = "http://155.230.90.22:9000";
   private user = {
     email: '',
     password: ''
@@ -43,7 +43,7 @@ export class LoginPagePage implements OnInit {
                 buttons: [{
                   text: '확인',
                   handler:() =>{
-                    this.router.navigateByUrl('/login-page');
+                    this.router.navigateByUrl('http://localhost:8100/login');
                   }
                 }]
               }).then(alert=>{

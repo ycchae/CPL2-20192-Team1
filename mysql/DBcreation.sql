@@ -1,17 +1,17 @@
 use capstoneDB;
-drop view POST_LIST;
-drop table COMMENT_NOTI;
-drop table COMMENT_SML;
-drop table COMMENT_MID;
-drop table COMMENT_BIG;
-drop table POST_NOTI;
-drop table POST_SML;
-drop table POST_MID;
-drop table POST_BIG;
-drop table ATTENDENCE;
-drop table PROJECT;
-drop table STATUS_INFO;
-drop table USER;
+#drop view POST_LIST;
+#drop table COMMENT_NOTI;
+#drop table COMMENT_SML;
+#drop table COMMENT_MID;
+#drop table COMMENT_BIG;
+#drop table POST_NOTI;
+#drop table POST_SML;
+#drop table POST_MID;
+#drop table POST_BIG;
+#drop table ATTENDENCE;
+#drop table PROJECT;
+#drop table STATUS_INFO;
+#drop table USER;
 
 CREATE TABLE USER(
     USER_ID VARCHAR(20),
@@ -41,6 +41,8 @@ CREATE TABLE PROJECT(
     PROJ_END DATETIME,
     PROJ_DESC TEXT,
     PROJ_STATUS INT(1),
+    PROJ_URL VARCHAR(512),
+    SALT VARCHAR(512),
     FOREIGN KEY(PROJ_STATUS) REFERENCES STATUS_INFO (STATUS),
     FOREIGN KEY(PROJ_MGR_UID) REFERENCES USER (USER_ID),
     PRIMARY KEY(PROJ_ID)
@@ -173,4 +175,14 @@ CREATE TABLE COMMENT_NOTI(
     FOREIGN KEY (NOTIC_AUTHOR) REFERENCES USER (USER_ID),
     FOREIGN KEY (NOTIC_STATUS) REFERENCES STATUS_INFO (STATUS),
     PRIMARY KEY(NOTIC_ID)
+);
+
+
+
+CREATE TABLE SEARCH(
+   PROJ_ID INT(11) UNSIGNED,
+    WORD varchar(255),
+    FILE_PATHS varchar(512),
+    foreign key (PROJ_ID) references PROJECT(PROJ_ID),
+    PRIMARY KEY(PROJ_ID, WORD)
 );
