@@ -1133,6 +1133,21 @@ router.route("/one-postnoti/select").get(function (req, res) {
     })
 })
 
+router.route("/select/search").get(function (req, res) {
+    var id = req.query.proj_id;
+
+    mysqlDB.query('select * from SEARCH where PROJ_ID = ?', [id], function (err, rows, fields) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log(rows);
+            res.write(JSON.stringify(rows));
+            res.end();
+        }
+    })
+})
+
 
 //postnoti one select
 router.route("/extract/word").get(function (req, res) {

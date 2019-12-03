@@ -231,5 +231,10 @@ export class HttpService {
     let URL = `${this.SERVER_ADDRESS}/one-postnoti/select?noti_id=${noti_id}`;
     return this.httpClient.get(URL, {headers: this.header}).toPromise();
   }
+
+  get_search_words(id : string) : Promise<{}> {
+    let URL = `${this.SERVER_ADDRESS}/select/search?proj_id=${id}`;
+    return this.httpClient.get(URL, {headers: this.header}).toPromise();
+  }
   
 }

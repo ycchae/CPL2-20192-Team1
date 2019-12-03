@@ -1,9 +1,9 @@
 <ion-app>
   <ion-header translucent>
     <ion-toolbar>
-      <ion-title> {{ project_name }}</ion-title>
+      <ion-title> {{ project_name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ion-icon name="search" style="font-size:xx-large;" (click)="navCtrl.navigateForward('/search')"></ion-icon> </ion-title>
+      
     </ion-toolbar>
-    <ion-icon name="search" slot="end" (click)="go_search()"></ion-icon>
     <ion-fab vertical="top" horizontal="end" slot="fixed">
       <ion-fab-button *ngIf="isPM" color="light">
         <ion-icon name="settings"></ion-icon>
