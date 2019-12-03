@@ -199,5 +199,9 @@ export class CreateSmallPage implements OnInit {
     translucent: true
   };
 
+  delFile(file: any){
+    this.attaches.delete(file);
+  }
+
 
 }

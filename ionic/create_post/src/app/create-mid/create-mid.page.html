@@ -42,6 +42,7 @@
       </ion-item>
       <ion-item *ngFor="let attach of attaches">
         <ion-label> {{ attach["name"] }} </ion-label>
+        <button (click)="delFile(attach)" class="ion-no-margin" ion-note slot="end">삭제</button>
       </ion-item>
     </ion-list>
 

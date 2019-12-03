@@ -19,14 +19,15 @@ export class MainPage  {
     private dataService: DataService,
   ) {  }
   
+  user_id : string;
   async initalize() {
-    let user_id : string;
+    
     await this.storage.get_uid()
     .then(val => {
-      user_id = val;
+      this.user_id = val;
     });
 
-    this.httpService.get_project_list(user_id).subscribe(
+    this.httpService.get_project_list(this.user_id).subscribe(
       (res: any[])  => {
         let tmp_projects: Array<{}> = [];
         res.forEach(function (value){

@@ -171,4 +171,8 @@ export class CreateMidPage implements OnInit{
     message: '',
     translucent: true
   };
+
+  delFile(file: any){
+    this.attaches.delete(file);
+  }
 }

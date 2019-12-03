@@ -146,4 +146,8 @@ export class CreateBigPage implements OnInit{
     });
   }
 
+  delFile(file: any){
+    this.attaches.delete(file);
+  }
+
 }
