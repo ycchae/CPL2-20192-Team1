@@ -65,6 +65,10 @@ export class TaskListPage {
           tmp.push({
             id: val["NOTI_ID"],
             title: val["NOTI_TITLE"],
+            desc: val["NOTI_DESC"],
+            status: val["NOTI_STATUS"],
+            author: val["NOTI_AUTHOR"],
+            created: val["NOTI_CREATED"]
           });
         });
         this.notis = tmp;
@@ -166,13 +170,11 @@ export class TaskListPage {
         this.midIsOpen.push(new Map<string, boolean>().set(this.tasks[i]["mids"][j]["id"], false));
       }
     }
-    console.log("?");
     this.calculate_post_progress();
   }
 
   calculate_post_progress(){
     var progress = 0;
-    console.log("calculate "+this.tasks.length)
     for(var big=0; big<this.tasks.length; ++big){
 
       if(this.tasks[big]['status'] == 1){   // if big completed
@@ -217,7 +219,7 @@ export class TaskListPage {
         }  
       }
     }
-    console.log('prog'+progress);
+    console.log('progress: '+progress);
     this.http.update_project_progress(this.project_id, progress.toString());
   }
 
@@ -236,14 +238,18 @@ export class TaskListPage {
     let author  = args[len].author;
     let created  = args[len].created;
     let desc  = args[len].desc;
-    let attach = args[len].attach.split("*");
+    let attach: any;
+    if(type != 'noti')
+     attach = args[len].attach.split("*");
     let attaches = new Array();
     let pre_path = `http://155.230.90.22:9000/download?path=`;
     
-    for(var i=0; i<attach.length-1; ++i){
-      var path = pre_path+attach[i];
-      var tmp = attach[i].split("/");
-      attaches.push({name: tmp[tmp.length-1], path: path});
+    if(type != 'noti'){
+      for(var i=0; i<attach.length-1; ++i){
+        var path = pre_path+attach[i];
+        var tmp = attach[i].split("/");
+        attaches.push({name: tmp[tmp.length-1], path: path});
+      }
     }
     
     this.dataService.setType(type);
@@ -267,15 +273,10 @@ export class TaskListPage {
     this.navCtrl.navigateForward('/board');
   }
 
-  go_create_big(){ 
-    this.navCtrl.navigateForward('/create-big');
+  go_create_page(val: string){ 
+    this.navCtrl.navigateForward(`/create-${val}`);
   }
-  go_create_mid(){
-    this.navCtrl.navigateForward('/create-mid');
-  }
-  go_create_sml(){
-    this.navCtrl.navigateForward('/create-small');
-  }
+  
   clipboard_copy(val : string){
     const selBox = document.createElement('textarea');
     selBox.style.position = 'fixed';

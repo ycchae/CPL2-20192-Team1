@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
 import { HttpService } from '../http_service_module/http.service';
 import { AlertController } from '@ionic/angular';
 import { NavController } from '@ionic/angular';

@@ -418,7 +418,37 @@ router.route("/task/createSML").post(upload.array('userFiles', 12), function (re
         }
     })
 })
+// NOTI create
+router.route("/create/noti").post(function (req, res) {
+    console.log(req.body);
+    var proj_id = req.body.proj_id;
+    var title = req.body.title;
+    var desc = req.body.desc;
+    var status = 0;
+    var author = req.body.author;
+    var created = req.body.created;
 
+    var data = {
+        PROJ_ID: proj_id,
+        NOTI_TITLE: title,
+        NOTI_DESC: desc,
+        NOTI_STATUS: status,
+        NOTI_AUTHOR: author,
+        NOTI_CREATED: created
+    };
+    console.log(data);
+    mysqlDB.query('INSERT INTO POST_NOTI set ?', data, function (err, results) {
+        var admit;
+        if (!err) {
+            admit = { "create": "success" };
+        } else {
+            console.log(err);
+            admit = { "create": "deny" };
+        }
+        res.write(JSON.stringify(admit));
+        res.end();
+    })
+})
 // PROJECT Create
 router.route("/project/create").post(function (req, res) {
     var mgr_id = req.body.mgr_id;
@@ -480,9 +510,6 @@ router.route("/project/create").post(function (req, res) {
             res.end();
         }
     })
-
-
-
 })
 
 //project list select

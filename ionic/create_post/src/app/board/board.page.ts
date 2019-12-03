@@ -43,11 +43,15 @@ export class BoardPage implements OnInit {
     this.title = this.dataservice.getTitle();
     this.desc = this.dataservice.getDesc();
     this.author = this.dataservice.getAuthor();
-    this.start = this.dataservice.getStart();
-    this.end = this.dataservice.getEnd();
-    this.created = this.dataservice.getCreated();
-    this.attaches = this.dataservice.getAttaches();
     this.id = this.dataservice.getBoardID();
+    this.created = this.dataservice.getCreated();
+    
+    if(this.type != 'noti'){
+      this.start = this.dataservice.getStart();
+      this.end = this.dataservice.getEnd();
+      this.attaches = this.dataservice.getAttaches();
+    }
+    
     
   }
 

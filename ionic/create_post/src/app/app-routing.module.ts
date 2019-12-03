@@ -13,6 +13,8 @@ const routes: Routes = [
   { path: 'create-mid', loadChildren: './create-mid/create-mid.module#CreateMidPageModule' },
   { path: 'create-small', loadChildren: './create-small/create-small.module#CreateSmallPageModule' },
   { path: 'add-member', loadChildren: './add-member/add-member.module#AddMemberPageModule' },  { path: 'board', loadChildren: './board/board.module#BoardPageModule' },
+  { path: 'create-noti', loadChildren: './create-noti/create-noti.module#CreateNotiPageModule' },
+  { path: 'search', loadChildren: './search/search.module#SearchPageModule' },
 
 
 ]

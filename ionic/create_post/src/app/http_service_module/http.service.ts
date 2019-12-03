@@ -57,7 +57,10 @@ export class HttpService {
     let URL = `${this.SERVER_ADDRESS}/project/select?user_id=${user_id}`;
     return this.httpClient.get(URL, {headers: this.header});
   }
-  
+  create_noti(info): Promise<{}>{
+    let URL = `${this.SERVER_ADDRESS}/create/noti`;
+    return this.httpClient.post(URL, info, {headers: this.header}).toPromise();
+  }
   create_big_task(info) : Promise<{}>{
     let URL = `${this.SERVER_ADDRESS}/task/createBIG`;
     return this.httpClient.post(URL, info).toPromise();

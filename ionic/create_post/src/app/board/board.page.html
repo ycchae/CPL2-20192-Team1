@@ -27,9 +27,9 @@
 
 <ion-content fullscreen>
   <ion-list>
-    <ion-item>
+    <ion-item *ngIf="type != 'noti'">
       <ion-label class="ion-text-wrap" position="stacked">프로젝트 기간</ion-label>
-      <ion-text> {{dateConvertor(start) +' ~ '+ dateConvertor(end)}} </ion-text>
+      <ion-text > {{dateConvertor(start) +' ~ '+ dateConvertor(end)}} </ion-text>
     </ion-item>
     <ion-item>
         <ion-label class="ion-text-wrap" position="stacked">내용</ion-label>
